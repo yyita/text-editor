@@ -1,0 +1,163 @@
+﻿using System.IO;  // File, 
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Microsoft.Win32;  // OpenFileDialog, SaveFileDialog
+
+namespace Text_Editor;
+
+public static class EditorCommands
+{
+    // file menu
+    public static readonly RoutedCommand Load = new RoutedCommand("Load", typeof(EditorCommands));
+    public static readonly RoutedCommand Save = new RoutedCommand("Save", typeof(EditorCommands));
+    // edit menu
+    public static readonly RoutedCommand Find = new RoutedCommand("Find", typeof(EditorCommands));
+    public static readonly RoutedCommand Replace = new RoutedCommand("Replace", typeof(EditorCommands));
+    // format menu
+    public static readonly RoutedCommand Upper = new RoutedCommand("Upper", typeof(EditorCommands));
+    public static readonly RoutedCommand Lower = new RoutedCommand("Lower", typeof(EditorCommands));
+    public static readonly RoutedCommand Capitalize = new RoutedCommand("Capitalize", typeof(EditorCommands));
+    public static readonly RoutedCommand Indent = new RoutedCommand("Indent", typeof(EditorCommands));
+    public static readonly RoutedCommand Dedent = new RoutedCommand("Dedent", typeof(EditorCommands));
+    // Non-MenuItem
+    public static readonly RoutedCommand Tab = new RoutedCommand("Tab", typeof(EditorCommands));
+}
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
+{
+    private int CountLeadingSpaces(string text)
+    {
+        int count = 0;
+        foreach (char character in text)
+        {
+            if (char.IsWhiteSpace(character))
+                count++;
+            else
+                break;
+        }
+        return count;
+    }
+    public MainWindow()
+    {
+        InitializeComponent();
+
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Load,
+            (_, _) => {
+                var dialog = new OpenFileDialog {
+                    Filter = "All documents|*.*",
+                };
+                if (dialog.ShowDialog() == false)
+                    return;
+                textbox.Text = File.ReadAllText(dialog.FileName);
+            }
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Save,
+            (_, _) => {
+                var dialog = new SaveFileDialog {
+                    Filter = "All documents|*.*",
+                };
+                if (dialog.ShowDialog() == false)
+                    return;
+                File.WriteAllText(dialog.FileName, textbox.Text);
+            }
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Upper,
+            (_, _) => {
+                textbox.SelectedText = textbox.SelectedText.ToUpper();
+            },
+            (_, evt) => evt.CanExecute = textbox.SelectionLength > 0
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Lower,
+            (_, _) => {
+                textbox.SelectedText = textbox.SelectedText.ToLower();
+            },
+            (_, evt) => evt.CanExecute = textbox.SelectionLength > 0
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Capitalize,
+            (_, _) => {
+                string selectedText = textbox.SelectedText;
+                textbox.SelectedText = $"{selectedText[0].ToString().ToUpper()}{selectedText.Substring(1).ToLower()}";
+            },
+            (_, evt) => evt.CanExecute = textbox.SelectionLength > 0
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Indent,
+            (_, _) => {
+                int selectionHead = textbox.SelectionStart;
+                int selectionTail = selectionHead + textbox.SelectionLength;
+                int rowHead = textbox.GetLineIndexFromCharacterIndex(selectionHead);
+                int rowTail = textbox.GetLineIndexFromCharacterIndex(selectionTail);
+                textbox.BeginChange();
+                try {
+                    // 移除缩进
+                    for (int row = rowHead; row <= rowTail; row++)
+                    {
+                        string text = textbox.GetLineText(row);
+                        int space_count = CountLeadingSpaces(text);
+                        int index_of_first_character = textbox.GetCharacterIndexFromLineIndex(row);
+                        textbox.Select(index_of_first_character, 0);
+                        textbox.SelectedText = new String(' ', 4 - space_count % 4);
+                    }
+                    // 重设选区
+                    int index_of_selection_first_character = textbox.GetCharacterIndexFromLineIndex(rowHead);
+                    int index_of_selection_final_character = textbox.GetCharacterIndexFromLineIndex(rowTail) + textbox.GetLineLength(rowTail);
+                    textbox.Select(index_of_selection_first_character, index_of_selection_final_character - index_of_selection_first_character);
+                }
+                finally {
+                    textbox.EndChange();
+                }
+            }
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Dedent,
+            (_, _) => {
+                int selectionHead = textbox.SelectionStart;
+                int selectionTail = selectionHead + textbox.SelectionLength;
+                int rowHead = textbox.GetLineIndexFromCharacterIndex(selectionHead);
+                int rowTail = textbox.GetLineIndexFromCharacterIndex(selectionTail);
+                textbox.BeginChange();
+                try {
+                    // 移除缩进
+                    for (int row = rowHead; row <= rowTail; row++)
+                    {
+                        string text = textbox.GetLineText(row);
+                        int space_count = CountLeadingSpaces(text);
+                        int index_of_first_character = textbox.GetCharacterIndexFromLineIndex(row);
+                        textbox.Select(index_of_first_character, Math.Min(space_count, 4));
+                        textbox.SelectedText = "";
+                    }
+                    // 重设选区
+                    int index_of_selection_first_character = textbox.GetCharacterIndexFromLineIndex(rowHead);
+                    int index_of_selection_final_character = textbox.GetCharacterIndexFromLineIndex(rowTail) + textbox.GetLineLength(rowTail);
+                    textbox.Select(index_of_selection_first_character, index_of_selection_final_character - index_of_selection_first_character);
+                }
+                finally {
+                    textbox.EndChange();
+                }
+            }
+        ));
+        textbox.CommandBindings.Add(new CommandBinding(
+            EditorCommands.Tab,
+            (_, _) => {
+                textbox.SelectedText = "    ";
+                textbox.CaretIndex += 4;  // 取消选区
+            }
+        ));
+    }
+}
