@@ -184,6 +184,14 @@ public partial class MainWindow : Window
             }
         ));
 
+        textbox.SelectionChanged += (_, _) => {
+            int caret_index = textbox.CaretIndex;
+            int row = textbox.GetLineIndexFromCharacterIndex(caret_index);
+            int column = caret_index - textbox.GetCharacterIndexFromLineIndex(row);
+            position.Content = $"{row + 1}, {column + 1}";
+            selected.Content = textbox.SelectionLength;
+        };
+
         textbox.Focus();
     }
 }

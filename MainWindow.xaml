@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Grid.Column="0">
             <MenuItem Header="File">
@@ -61,5 +62,12 @@
                 <KeyBinding Key="OemOpenBrackets" Modifiers="Control" Command="local:EditorCommands.Dedent"/>
             </local:CustomizedTextBox.InputBindings>
         </local:CustomizedTextBox>
+        <ToolBar Grid.Row="2" Grid.Column="0">
+            <Label>Position</Label>
+            <Label x:Name="position">1, 1</Label>
+            <Separator/>
+            <Label x:Name="selected">0</Label>
+            <Label>selected</Label>
+        </ToolBar>
     </Grid>
 </Window>
