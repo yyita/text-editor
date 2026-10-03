@@ -1,4 +1,4 @@
-﻿<Window x:Class="Text_Editor.MainWindow"
+<Window x:Class="Text_Editor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,37 +13,35 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Grid.Column="0">
             <MenuItem Header="File">
-                <MenuItem Header="_Load" Command="local:EditorCommands.Load" InputGestureText="Ctrl+L"/>
-                <MenuItem Header="_Save" Command="local:EditorCommands.Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Load" Command="local:EditorCommands.Load" InputGestureText="Ctrl+L"/>
+                <MenuItem Header="Save" Command="local:EditorCommands.Save" InputGestureText="Ctrl+S"/>
             </MenuItem>
             <MenuItem Header="Edit">
-                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo" InputGestureText="Ctrl+Z"/>
-                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo" InputGestureText="Ctrl+Y"/>
+                <MenuItem Header="Undo" Command="ApplicationCommands.Undo" InputGestureText="Ctrl+Z"/>
+                <MenuItem Header="Redo" Command="ApplicationCommands.Redo" InputGestureText="Ctrl+Y"/>
                 <Separator/>
-                <MenuItem Header="_Cut" Command="ApplicationCommands.Cut" InputGestureText="Ctrl+X"/>
-                <MenuItem Header="_Copy" Command="ApplicationCommands.Copy" InputGestureText="Ctrl+C"/>
-                <MenuItem Header="_Paste" Command="ApplicationCommands.Paste" InputGestureText="Ctrl+V"/>
+                <MenuItem Header="Cut" Command="ApplicationCommands.Cut" InputGestureText="Ctrl+X"/>
+                <MenuItem Header="Copy" Command="ApplicationCommands.Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem Header="Paste" Command="ApplicationCommands.Paste" InputGestureText="Ctrl+V"/>
                 <Separator/>
-                <MenuItem Header="_Find" Command="local:EditorCommands.Find" InputGestureText="Ctrl+F"/>
-                <MenuItem Header="_Replace" Command="local:EditorCommands.Replace" InputGestureText="Ctrl+R"/>
+                <MenuItem Header="Find" Command="local:EditorCommands.Find" InputGestureText="Ctrl+F"/>
+                <MenuItem Header="Replace" Command="local:EditorCommands.Replace" InputGestureText="Ctrl+R"/>
             </MenuItem>
             <MenuItem Header="Format">
-                <MenuItem Header="_Upper" Command="local:EditorCommands.Upper" InputGestureText="Alt+U"/>
-                <MenuItem Header="_Lower" Command="local:EditorCommands.Lower" InputGestureText="Alt+L"/>
-                <MenuItem Header="_Capitalize" Command="local:EditorCommands.Capitalize" InputGestureText="Alt+C"/>
+                <MenuItem Header="Upper" Command="local:EditorCommands.Upper" InputGestureText="Alt+U"/>
+                <MenuItem Header="Lower" Command="local:EditorCommands.Lower" InputGestureText="Alt+L"/>
+                <MenuItem Header="Capitalize" Command="local:EditorCommands.Capitalize" InputGestureText="Alt+C"/>
                 <Separator/>
-                <MenuItem Header="_Indent" Command="local:EditorCommands.Indent" InputGestureText="Ctrl+]"/>
-                <MenuItem Header="_Dedent" Command="local:EditorCommands.Dedent" InputGestureText="Ctrl+["/>
+                <MenuItem Header="Indent" Command="local:EditorCommands.Indent" InputGestureText="Ctrl+]"/>
+                <MenuItem Header="Dedent" Command="local:EditorCommands.Dedent" InputGestureText="Ctrl+["/>
             </MenuItem>
         </Menu>
-        <TextBox Grid.Row="1" Grid.Column="0"
-                 Name="textbox"
-                 AcceptsReturn="true"
-                 AcceptsTab="true"
-                 TextWrapping="NoWrap"
-                 VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Auto">
-            <TextBox.InputBindings>
+        <local:CustomizedTextBox Grid.Row="1" Grid.Column="0" x:Name="textbox"
+                 AcceptsReturn="true" AcceptsTab="true" TextWrapping="NoWrap"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                 FontSize="16">
+            <!--TextWrapping="NoWrap": 单行至多渲染 9600 个字符。-->
+            <local:CustomizedTextBox.InputBindings>
                 <KeyBinding Key="Tab" Command="local:EditorCommands.Tab"/>
                 <KeyBinding Key="L" Modifiers="Control" Command="local:EditorCommands.Load"/>
                 <KeyBinding Key="S" Modifiers="Control" Command="local:EditorCommands.Save"/>
@@ -51,7 +49,9 @@
                 <KeyBinding Key="Y" Modifiers="Control" Command="ApplicationCommands.Redo"/>
                 <KeyBinding Key="X" Modifiers="Control" Command="ApplicationCommands.Cut"/>
                 <KeyBinding Key="C" Modifiers="Control" Command="ApplicationCommands.Copy"/>
+                <KeyBinding Key="Insert" Modifiers="Control" Command="ApplicationCommands.Copy"/>
                 <KeyBinding Key="V" Modifiers="Control" Command="ApplicationCommands.Paste"/>
+                <KeyBinding Key="Insert" Modifiers="Shift" Command="ApplicationCommands.Paste"/>
                 <KeyBinding Key="F" Modifiers="Control" Command="local:EditorCommands.Find"/>
                 <KeyBinding Key="R" Modifiers="Control" Command="local:EditorCommands.Replace"/>
                 <KeyBinding Key="U" Modifiers="Alt" Command="local:EditorCommands.Upper"/>
@@ -59,7 +59,7 @@
                 <KeyBinding Key="C" Modifiers="Alt" Command="local:EditorCommands.Capitalize"/>
                 <KeyBinding Key="OemCloseBrackets" Modifiers="Control" Command="local:EditorCommands.Indent"/>
                 <KeyBinding Key="OemOpenBrackets" Modifiers="Control" Command="local:EditorCommands.Dedent"/>
-            </TextBox.InputBindings>
-        </TextBox>
+            </local:CustomizedTextBox.InputBindings>
+        </local:CustomizedTextBox>
     </Grid>
 </Window>

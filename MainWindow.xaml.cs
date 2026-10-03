@@ -1,4 +1,4 @@
-﻿using System.IO;  // File, 
+using System.IO;  // File, 
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +29,22 @@ public static class EditorCommands
     public static readonly RoutedCommand Dedent = new RoutedCommand("Dedent", typeof(EditorCommands));
     // Non-MenuItem
     public static readonly RoutedCommand Tab = new RoutedCommand("Tab", typeof(EditorCommands));
+}
+
+public class CustomizedTextBox : TextBox
+{
+    public (int, int) SelectionLineRange {
+        get {
+            int selectionHead = this.SelectionStart;
+            int selectionTail = selectionHead + this.SelectionLength;
+            int rowHead = this.GetLineIndexFromCharacterIndex(selectionHead);
+            int rowTail = this.GetLineIndexFromCharacterIndex(selectionTail);
+            // 修正末行：'\r\n'在`TextBox.GetLineIndexFromCharacterIndex`中被划分到下一行。
+            if (rowTail > rowHead && selectionTail == this.GetCharacterIndexFromLineIndex(rowTail))
+                rowTail--;
+            return (rowHead, rowTail);
+        }
+    }
 }
 
 /// <summary>
@@ -99,13 +115,10 @@ public partial class MainWindow : Window
         textbox.CommandBindings.Add(new CommandBinding(
             EditorCommands.Indent,
             (_, _) => {
-                int selectionHead = textbox.SelectionStart;
-                int selectionTail = selectionHead + textbox.SelectionLength;
-                int rowHead = textbox.GetLineIndexFromCharacterIndex(selectionHead);
-                int rowTail = textbox.GetLineIndexFromCharacterIndex(selectionTail);
+                (int rowHead, int rowTail) = textbox.SelectionLineRange;
                 textbox.BeginChange();
                 try {
-                    // 移除缩进
+                    // 添加缩进
                     for (int row = rowHead; row <= rowTail; row++)
                     {
                         string text = textbox.GetLineText(row);
@@ -127,10 +140,7 @@ public partial class MainWindow : Window
         textbox.CommandBindings.Add(new CommandBinding(
             EditorCommands.Dedent,
             (_, _) => {
-                int selectionHead = textbox.SelectionStart;
-                int selectionTail = selectionHead + textbox.SelectionLength;
-                int rowHead = textbox.GetLineIndexFromCharacterIndex(selectionHead);
-                int rowTail = textbox.GetLineIndexFromCharacterIndex(selectionTail);
+                (int rowHead, int rowTail) = textbox.SelectionLineRange;
                 textbox.BeginChange();
                 try {
                     // 移除缩进
@@ -155,9 +165,15 @@ public partial class MainWindow : Window
         textbox.CommandBindings.Add(new CommandBinding(
             EditorCommands.Tab,
             (_, _) => {
-                textbox.SelectedText = "    ";
-                textbox.CaretIndex += 4;  // 取消选区
+                int row = textbox.GetLineIndexFromCharacterIndex(textbox.CaretIndex);
+                string text = textbox.GetLineText(row);
+                int space_count = CountLeadingSpaces(text);
+                int added_count = 4 - space_count % 4;
+                textbox.SelectedText = new String(' ', added_count);
+                textbox.CaretIndex += added_count;  // 取消选区
             }
         ));
+
+        textbox.Focus();
     }
 }
