@@ -41,7 +41,6 @@
                  AcceptsReturn="true" AcceptsTab="true" TextWrapping="NoWrap"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                  FontFamily="Cascadia Mono" FontSize="16">
-            <!--TextWrapping="NoWrap": 单行至多渲染 9600 个字符。-->
             <local:CustomizedTextBox.InputBindings>
                 <KeyBinding Key="Tab" Command="local:EditorCommands.Tab"/>
                 <KeyBinding Key="L" Modifiers="Control" Command="local:EditorCommands.Load"/>
@@ -67,7 +66,7 @@
             <Label x:Name="position">1, 1</Label>
             <Separator/>
             <Label x:Name="selected">0</Label>
-            <Label>selected</Label>
+            <Label>Selected</Label>
         </ToolBar>
     </Grid>
 </Window>

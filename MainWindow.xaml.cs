@@ -192,6 +192,17 @@ public partial class MainWindow : Window
             selected.Content = textbox.SelectionLength;
         };
 
+        // 支持通过命令行加载文件
+        string[] args = System.Environment.GetCommandLineArgs();
+        if (args.Length > 1)
+        {
+            string file_path = args[1];
+            if (File.Exists(file_path))
+                textbox.Text = File.ReadAllText(file_path);
+            else
+                MessageBox.Show($"File not found: {file_path}");
+        }
+
         textbox.Focus();
     }
 }
