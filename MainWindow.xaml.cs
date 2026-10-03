@@ -40,10 +40,19 @@ public class CustomizedTextBox : TextBox
             int rowHead = this.GetLineIndexFromCharacterIndex(selectionHead);
             int rowTail = this.GetLineIndexFromCharacterIndex(selectionTail);
             // 修正末行：'\r\n'在`TextBox.GetLineIndexFromCharacterIndex`中被划分到下一行。
-            if (rowTail > rowHead && selectionTail == this.GetCharacterIndexFromLineIndex(rowTail))
+            if (
+                rowTail > rowHead  // 选区 ≠ 空
+             && this.GetCharacterIndexFromLineIndex(rowTail) == selectionTail  // 选区末行首字 = 选区尾字
+            )
                 rowTail--;
             return (rowHead, rowTail);
         }
+    }
+    public void ClearUndoQueue()
+    {
+        Int32 undo_limit = this.UndoLimit;
+        this.UndoLimit = 0;
+        this.UndoLimit = undo_limit;
     }
 }
 
@@ -57,7 +66,7 @@ public partial class MainWindow : Window
         int count = 0;
         foreach (char character in text)
         {
-            if (char.IsWhiteSpace(character))
+            if (character == ' ')
                 count++;
             else
                 break;
@@ -77,6 +86,7 @@ public partial class MainWindow : Window
                 if (dialog.ShowDialog() == false)
                     return;
                 textbox.Text = File.ReadAllText(dialog.FileName);
+                textbox.ClearUndoQueue();
             }
         ));
         textbox.CommandBindings.Add(new CommandBinding(

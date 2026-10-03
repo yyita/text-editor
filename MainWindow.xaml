@@ -39,7 +39,7 @@
         <local:CustomizedTextBox Grid.Row="1" Grid.Column="0" x:Name="textbox"
                  AcceptsReturn="true" AcceptsTab="true" TextWrapping="NoWrap"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                 FontSize="16">
+                 FontFamily="Cascadia Mono" FontSize="16">
             <!--TextWrapping="NoWrap": 单行至多渲染 9600 个字符。-->
             <local:CustomizedTextBox.InputBindings>
                 <KeyBinding Key="Tab" Command="local:EditorCommands.Tab"/>
