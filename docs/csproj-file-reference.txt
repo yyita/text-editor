@@ -1,0 +1,97 @@
+﻿《 C Sharp Project 文件 - 参考 》 （上次更新：2026-10-17）
+
+本文致力于帮助编写 .csproj 文件，介绍它的各种用途以及注意事项。
+
+项目名称
+
+  设置方式
+    由 C Sharp Project 文件的名称决定。
+
+  注意事项
+    1. 名称为空会报错。
+    2. 按单拓展名识别。
+
+编译类型
+
+  设置方式
+    OutputType
+
+  选项
+       Exe —— 运行时附带控制台。
+    WinExe —— 与 Exe 选项相反。
+
+窗口图标 / 任务栏图标 / 进程图标
+
+  设置方式
+    ApplicationIcon / 系统默认
+
+bin\...\<文件名>.deps.json
+
+  名称
+
+    设置方式
+      AssemblyName / 项目名称
+
+bin\...\<文件名>.dll
+
+  名称
+
+    设置方式
+      AssemblyName / 项目名称
+
+  图标
+
+    设置方式
+      ApplicationIcon
+
+  元属性
+
+    FileDescription（文件说明）
+      设置方式
+        AssemblyTitle / 项目名称
+
+    FileVersion（文件版本）
+      设置方式
+        FileVersion / 1.0.0
+
+    ProductName（产品名称）
+      设置方式
+        Product / AssemblyName / 项目名称
+
+    ProductVersion（产品版本）
+      设置方式
+        InformationalVersion / 1.0.0
+
+    ？？？（注释）
+      设置方式
+        Description / 系统默认
+
+    ？？？（版权所有者）
+      设置方式
+        Company / 系统默认
+
+    ？？？（版权）
+      设置方式
+        Copyright / 系统默认
+
+    ？？？（？？？）
+      设置方式
+        NeutralLanguage / 语言中性
+
+bin\...\<文件名>.exe
+
+   与 dll 文件一致。
+
+bin\...\<文件名>.pdb
+
+  名称
+
+    设置方式
+      AssemblyName / 项目名称
+
+bin\...\<文件名>.runtimeconfig.json
+
+  名称
+
+    设置方式
+      AssemblyName / 项目名称

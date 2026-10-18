@@ -17,12 +17,12 @@ public class EditorWindow : Window
     }
     static EditorWindow(
     ){
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(Commands.Open,      Open_Execute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(Commands.ToFind,    OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Find),    FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(Commands.ToReplace, OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Replace), FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(Commands.ToModify,  OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Modify),  FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.FileCommands.Open,    Open_Execute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Find,    OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Find),    FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Replace), FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Modify,  OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Modify),  FindReplace_CanExecute));
     }
-    private TabControl TabControl = null!;
+    public TabControl TabControl = null!;
     private FindReplaceWindow? FindReplaceWindow = null;
     private Grid BuildGridLayout()
     {
@@ -59,7 +59,7 @@ public class EditorWindow : Window
     ){
         return (object sender, ExecutedRoutedEventArgs evt) => {
             var editor = (EditorWindow) sender;
-            var window = new FindReplaceWindow(editor.TabControl, FindReplaceWindow.Mode.Find){ Owner = editor };
+            var window = new FindReplaceWindow(editor.TabControl, mode){ Owner = editor };
             editor.FindReplaceWindow = window;
             window.Closed += (object? sender, EventArgs evt) => {
                 editor.FindReplaceWindow = null;

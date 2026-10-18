@@ -26,4 +26,9 @@ public static class StringExtensions
         }
         return counter;
     }
+    public static Int32 CountAdjoiningSpaces(this String str, Int32 index)
+    {
+        return str.Substring(0, index).CountTrailingSpaces()
+             + str.Substring(index).CountLeadingSpaces();
+    }
 }

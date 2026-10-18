@@ -9,8 +9,8 @@ public class TabControl : System.Windows.Controls.TabControl
     }
     static TabControl(
     ){
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TabControl), new System.Windows.Input.CommandBinding(Commands.Save,  Save_Execute,  Save_CanExecute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TabControl), new System.Windows.Input.CommandBinding(Commands.Close, Close_Execute, Close_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TabControl), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Save,  Save_Execute,  Save_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TabControl), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Close, Close_Execute, Close_CanExecute));
     }
     private void OnLoaded(
         object sender,

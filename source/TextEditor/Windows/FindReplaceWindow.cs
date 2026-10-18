@@ -107,10 +107,10 @@ public class FindReplaceWindow : Window
     }
     static FindReplaceWindow()
     {
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(Commands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(Commands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(Commands.Replace,      Replace_Execute,      Found_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(Commands.ReplaceAll,   ReplaceAll_Execute,   Found_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.SearchCommands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.SearchCommands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
     }
     protected override void OnClosing(
         System.ComponentModel.CancelEventArgs evt
@@ -203,7 +203,7 @@ public class FindReplaceWindow : Window
 
         var findPreviousButton = new Button{
             Content = "↑",
-            Command = Commands.FindPrevious,
+            Command = TextEditor.SearchCommands.FindPrevious,
             CommandTarget = this,
             Margin = new Thickness(2D, 0D, 0D, 0D),
             ToolTip = new ToolTip{ Content = "Find Previous (Ctrl+Up)" }
@@ -214,7 +214,7 @@ public class FindReplaceWindow : Window
 
         var findNextButton = new Button{
             Content = "↓",
-            Command = Commands.FindNext,
+            Command = TextEditor.SearchCommands.FindNext,
             CommandTarget = this,
             ToolTip = new ToolTip{ Content = "Find Next (Ctrl+Down)" }
         };
@@ -234,7 +234,7 @@ public class FindReplaceWindow : Window
 
         var replaceButton = new Button{
             Content = "↓",
-            Command = Commands.Replace,
+            Command = TextEditor.ReplacementCommands.Replace,
             CommandTarget = this,
             Margin = new Thickness(2D, 0D, 0D, 0D),
             ToolTip = new ToolTip{ Content = "Replace (Ctrl+Enter)" }
@@ -246,7 +246,7 @@ public class FindReplaceWindow : Window
 
         var replaceAllButton = new Button{
             Content = "⇊",
-            Command = Commands.ReplaceAll,
+            Command = TextEditor.ReplacementCommands.ReplaceAll,
             CommandTarget = this,
             ToolTip = new ToolTip{ Content = "Replace All (Ctrl+Shift+Enter)" }
         };

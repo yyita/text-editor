@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <Product>Text Editor</Product>
+    <AssemblyTitle>Text Editor</AssemblyTitle>
     <AssemblyName>editor</AssemblyName>
     <OutputType>Exe</OutputType>
+    <InformationalVersion>0.1.0</InformationalVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <NeutralLanguage>zh-CN</NeutralLanguage>
+    <ApplicationIcon>$(RepoRoot)\resources\icon\app.ico</ApplicationIcon>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
 </Project>

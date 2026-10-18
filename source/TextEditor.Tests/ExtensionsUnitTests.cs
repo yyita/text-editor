@@ -19,4 +19,9 @@ public static class StringExtensionsTestCases
         Debug.Assert(typeof(TextEditor.StringExtensions).GetMethod("CountTrailingSpaces") != null);
         Debug.Assert("    ".CountTrailingSpaces() == 4);
     }
+    public static void Test_CountAdjoiningSpaces()
+    {
+        Debug.Assert(typeof(TextEditor.StringExtensions).GetMethod("CountAdjoiningSpaces") != null);
+        Debug.Assert("        ".CountAdjoiningSpaces(4) == 8);
+    }
 }

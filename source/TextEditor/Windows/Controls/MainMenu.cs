@@ -4,35 +4,52 @@ public class MainMenu : System.Windows.Controls.Menu
 {
     public MainMenu(TextEditor.TabControl tabControl)
     {
-        var fileMenu = new System.Windows.Controls.MenuItem{ Header = "File" };
-        fileMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.Open,  CommandTarget = tabControl });
-        fileMenu.Items.Add(new System.Windows.Controls.Separator());
-        fileMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.Save,  CommandTarget = tabControl });
-        fileMenu.Items.Add(new System.Windows.Controls.Separator());
-        fileMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.Close, CommandTarget = tabControl });
-        this.Items.Add(fileMenu);
-
-        var editMenu = new System.Windows.Controls.MenuItem{ Header = "Edit" };
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = System.Windows.Input.ApplicationCommands.Undo });
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = System.Windows.Input.ApplicationCommands.Redo });
-        editMenu.Items.Add(new System.Windows.Controls.Separator());
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = System.Windows.Input.ApplicationCommands.Cut });
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = System.Windows.Input.ApplicationCommands.Copy });
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = System.Windows.Input.ApplicationCommands.Paste });
-        editMenu.Items.Add(new System.Windows.Controls.Separator());
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.ToFind,    CommandTarget = tabControl });
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.ToReplace, CommandTarget = tabControl });
-        editMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.ToModify,  CommandTarget = tabControl });
-        this.Items.Add(editMenu);
-
-        var formatMenu = new System.Windows.Controls.MenuItem{ Header = "Format" };
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.ToUpper });
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.ToLower });
-        formatMenu.Items.Add(new System.Windows.Controls.Separator());
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.Indent });
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.Dedent });
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.IndentRegion, InputGestureText = "Ctrl+]" });
-        formatMenu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.Commands.DedentRegion, InputGestureText = "Ctrl+[" });
-        this.Items.Add(formatMenu);
+        this.Items.Add(this.FileMenu_Build(tabControl));
+        this.Items.Add(this.EditMenu_Build(tabControl));
+        this.Items.Add(this.FormatMenu_Build());
+    }
+    private System.Windows.Controls.MenuItem FileMenu_Build( TextEditor.TabControl tabControl )
+    {
+        var menu = new System.Windows.Controls.MenuItem{ Header = "文件" };
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Open,  CommandTarget = tabControl });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Difference });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Save,  CommandTarget = tabControl });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Close, CommandTarget = tabControl });
+        return menu;
+    }
+    private System.Windows.Controls.MenuItem EditMenu_Build( TextEditor.TabControl tabControl )
+    {
+        var menu = new System.Windows.Controls.MenuItem{ Header = "编辑" };
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Undo });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Redo });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Cut });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Copy });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Paste });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Find,    CommandTarget = tabControl });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Replace, CommandTarget = tabControl });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Modify,  CommandTarget = tabControl });
+        return menu;
+    }
+    private System.Windows.Controls.MenuItem FormatMenu_Build()
+    {
+        var menu = new System.Windows.Controls.MenuItem{ Header = "格式" };
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Upper });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Lower });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Binary });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Octal });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Decimal });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Hexadecimal });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Indent });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Dedent });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.IndentRegion, InputGestureText = "Ctrl+]" });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.DedentRegion, InputGestureText = "Ctrl+[" });
+        return menu;
     }
 }
