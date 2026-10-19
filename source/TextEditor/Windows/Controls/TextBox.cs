@@ -122,7 +122,10 @@ public class TextBox : System.Windows.Controls.TextBox
         var (row, column) = textBox.GetCoordinatesFromCharacterIndex(caretIndex);
         var lineText = textBox.GetLineText(row);
         var textBeforeCaret = lineText.Substring(0, column);
-        var removeSpaceCount = Math.Min(textBeforeCaret.CountTrailingSpaces(), 4);
+        var trailingSpaceCount = textBeforeCaret.CountTrailingSpaces();
+        if (trailingSpaceCount == 0)
+            return;
+        var removeSpaceCount = (((trailingSpaceCount & 3) + 3) & 3) + 1;  // 0, 1, 2, 3 -> 4, 1, 2, 3
         textBox.Remove(caretIndex - removeSpaceCount, removeSpaceCount);
     }
     private static void IndentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)

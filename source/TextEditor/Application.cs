@@ -43,7 +43,10 @@ public class Application : System.Windows.Application
         base.OnStartup(evt);
 
         if (!this.IsValidCommandLineArguments(evt.Args))
+        {
+            this.Shutdown();
             return;
+        }
 
         TextEditor.Application.Mutex = new System.Threading.Mutex(true, TextEditor.Application.MutexName, out bool noInstance);
         if (!noInstance)
@@ -65,7 +68,7 @@ public class Application : System.Windows.Application
         {
             if (!System.IO.File.Exists(argument))
             {
-                Console.WriteLine($"File not found: {argument} .");
+                System.Windows.MessageBox.Show($"File not found: {argument} .");
                 firstInvalidArgument ??= true;
             }
         }
