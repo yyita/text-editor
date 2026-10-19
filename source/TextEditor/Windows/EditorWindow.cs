@@ -8,7 +8,7 @@ public class EditorWindow : Window
 {
     public EditorWindow()
     {
-        this.Title = "Text Editor";
+        this.Title = "文本编辑器";
         this.Width = 600D;
         this.Height = 650D;
         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -18,9 +18,9 @@ public class EditorWindow : Window
     static EditorWindow(
     ){
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.FileCommands.Open,    Open_Execute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Find,    OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Find),    FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Replace), FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Modify,  OpenFindReplaceWindowCallback(TextEditor.FindReplaceWindow.Mode.Modify),  FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Find,    OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), FindReplace_CanExecute));
+        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Modify,  OpenFindReplaceWindowCallback(TextEditor.SearchMode.Modify),  FindReplace_CanExecute));
     }
     public TabControl TabControl = null!;
     private FindReplaceWindow? FindReplaceWindow = null;
@@ -55,7 +55,7 @@ public class EditorWindow : Window
         }
     }
     private static System.Windows.Input.ExecutedRoutedEventHandler OpenFindReplaceWindowCallback(
-        TextEditor.FindReplaceWindow.Mode mode
+        TextEditor.SearchMode mode
     ){
         return (object sender, ExecutedRoutedEventArgs evt) => {
             var editor = (EditorWindow) sender;

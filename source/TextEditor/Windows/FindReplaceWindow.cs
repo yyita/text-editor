@@ -9,7 +9,6 @@ namespace TextEditor;
 
 public class FindReplaceWindow : Window
 {
-    public enum Mode { Find, Replace, Modify };
     private TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
     private TextBox FindInput = null!;
     private TextBox ReplaceInput = null!;
@@ -45,7 +44,7 @@ public class FindReplaceWindow : Window
         this.ReplaceButton.Visibility = visibility;
         this.ReplaceAllButton.Visibility = visibility;
     }
-    public FindReplaceWindow(TabControl tabControl, Mode mode)
+    public FindReplaceWindow(TabControl tabControl, TextEditor.SearchMode mode)
     {
         this.TabControl = tabControl;
 
@@ -78,13 +77,13 @@ public class FindReplaceWindow : Window
 
         switch (mode)
         {
-            case Mode.Find:
+            case TextEditor.SearchMode.Find:
                 this.FindInput.Focus();
                 this.FindInput.CaretMoveToDocumentEnd();
                 ChangeReplacementAreaVisibility(false);
                 break;
 
-            case Mode.Replace:
+            case TextEditor.SearchMode.Replace:
                 if (hasTextBoxSelection)
                     this.ReplaceInput.Focus();
                 else
@@ -92,7 +91,7 @@ public class FindReplaceWindow : Window
                 ChangeReplacementAreaVisibility(true);
                 break;
 
-            case Mode.Modify:
+            case TextEditor.SearchMode.Modify:
                 if (hasTextBoxSelection)
                 {
                     this.ReplaceInput.Text = tabItem!.TextBox.SelectedText;

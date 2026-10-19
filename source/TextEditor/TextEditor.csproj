@@ -7,7 +7,7 @@
     <InformationalVersion>0.1.0</InformationalVersion>
     <FileVersion>0.1.0</FileVersion>
     <NeutralLanguage>zh-CN</NeutralLanguage>
-    <ApplicationIcon>$(RepoRoot)\resources\icon\app.ico</ApplicationIcon>
+    <ApplicationIcon>$(RepoRoot)\resources\icons\application.ico</ApplicationIcon>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

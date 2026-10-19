@@ -6,50 +6,22 @@ public class TabItem : System.Windows.Controls.TabItem
     {
         this.Content = this.BuildGridLayout();
         this.FilePath = filePath;
+
+        // 加载数据：
+        // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
+        this.TextBox.BeginChange();
         this.TextBox.Text = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+        this.TextBox.EndChange();
+
         this.RawData = this.TextBox.Text;
         Loaded += OnLoaded;
-    }
-    public System.Windows.Controls.TextBox TextBox = null!;
-    public bool IsDirty
-    {
-        get => this.RawData != this.TextBox.Text;
-    }
-    private string RawData = null!;
-    private System.Windows.Controls.TextBox PathBox = null!;
-    public string FilePath
-    {
-        get => this.PathBox.Text;
-        private set {
-            this.Header = System.IO.Path.GetFileName(value);
-            this.PathBox.Text = value;
-        }
-    }
-    private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
-    {
-        this.TextBox.Focus();
-        this.TextBox.TextChanged += this.TextBox_OnTextChanged;
-    }
-    private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
-    {
-        var header = (string) this.Header;
-        if (this.IsDirty)
-        {
-            if (!header.StartsWith("*"))
-            {
-                this.Header = $"*{header}";
-            }
-        }
-        else if (header.StartsWith("*"))
-        {
-            this.Header = header.Substring(1);
-        }
     }
     private System.Windows.Controls.Grid BuildGridLayout()
     {
         var gridLayout = new System.Windows.Controls.Grid();
         gridLayout.RowDefinitions.Add(new System.Windows.Controls.RowDefinition{ Height = System.Windows.GridLength.Auto });
         gridLayout.RowDefinitions.Add(new System.Windows.Controls.RowDefinition{ Height = new System.Windows.GridLength(1D, System.Windows.GridUnitType.Star) });
+        gridLayout.RowDefinitions.Add(new System.Windows.Controls.RowDefinition{ Height = System.Windows.GridLength.Auto });
 
         var pathBox = this.PathBox_Build();
         this.PathBox = pathBox;
@@ -62,6 +34,12 @@ public class TabItem : System.Windows.Controls.TabItem
         System.Windows.Controls.Grid.SetRow(textBox, 1);
         System.Windows.Controls.Grid.SetColumn(textBox, 0);
         gridLayout.Children.Add(textBox);
+
+        var statusBar = new TextEditor.StatusBar();
+        this.StatusBar = statusBar;
+        System.Windows.Controls.Grid.SetRow(statusBar, 2);
+        System.Windows.Controls.Grid.SetColumn(statusBar, 0);
+        gridLayout.Children.Add(statusBar);
 
         return gridLayout;
     }
@@ -82,6 +60,62 @@ public class TabItem : System.Windows.Controls.TabItem
             TabIndex = 0,  // 将 Tab 序提至最前，使切换至当前选项卡时的自动焦点落至自身
         };
         return box;
+    }
+    public System.Windows.Controls.TextBox TextBox = null!;
+    public bool IsDirty
+    {
+        get => this.RawData != this.TextBox.Text;
+    }
+    private string RawData = null!;
+    private System.Windows.Controls.TextBox PathBox = null!;
+    public string FilePath
+    {
+        get => this.PathBox.Text;
+        private set
+        {
+            this.Header = System.IO.Path.GetFileName(value);
+            this.PathBox.Text = value;
+        }
+    }
+    private TextEditor.StatusBar StatusBar = null!;
+    private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
+    {
+        this.TextBox.Focus();
+        this.TextBox.TextChanged += this.TextBox_OnTextChanged;
+        this.TextBox.SelectionChanged += (object sender, System.Windows.RoutedEventArgs evt) =>
+        {
+            var textBox = (System.Windows.Controls.TextBox) sender;
+            this.StatusBar.Coordinates = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
+        };
+        this.TextBox.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs evt) =>
+        {
+            if (evt.Key == System.Windows.Input.Key.Insert)
+            {
+                if (this.StatusBar.TextMode == TextEditor.TextMode.Insert)
+                {
+                    this.StatusBar.TextMode = TextEditor.TextMode.Overwrite;
+                }
+                else
+                {
+                    this.StatusBar.TextMode = TextEditor.TextMode.Insert;
+                }
+            }
+        };
+    }
+    private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
+    {
+        var header = (string) this.Header;
+        if (this.IsDirty)
+        {
+            if (!header.StartsWith("*"))
+            {
+                this.Header = $"*{header}";
+            }
+        }
+        else if (header.StartsWith("*"))
+        {
+            this.Header = header.Substring(1);
+        }
     }
     public void Save()
     {
