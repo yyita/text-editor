@@ -1,0 +1,14 @@
+﻿该文件用于记录程序意外的期望行为的信息。
+意外代号仅作标识，不与任何事件日期相关。
+
+#2026-10-19_1
+[ 换行 ]
+TextWrapping.NoWrap 的语义与行为不符。
+经实测，NoWrap 的 TextBox 的单行超过 9600 个
+UTF-16 码元后仍会进行折行，而其文档并没有标注这点。
+经查阅 WPF 的 Github 仓库，该行为是被期望的。
+参考资料：
+TextWrapping： https://learn.microsoft.com/en-us/dotnet/api/system.windows.textwrapping?view=windowsdesktop-10.0
+TextStore： https://github.com/dotnet/wpf/blob/65d15adece1df9a73e3d1abc11f8bbf99e9fc7a9/src/Microsoft.DotNet.Wpf/src/PresentationCore/MS/internal/TextFormatting/TextStore.cs#L2436
+后续防范：
+所有使用 NoWrap 的控件都会受此影响吗？建议必要时再测试。
