@@ -1,4 +1,4 @@
-﻿namespace TextEditor;
+﻿namespace TextEditor.Controls;
 
 public class StatusBar : System.Windows.Controls.Primitives.StatusBar
 {

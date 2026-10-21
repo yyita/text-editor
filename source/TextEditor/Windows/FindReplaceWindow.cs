@@ -9,9 +9,9 @@ namespace TextEditor;
 
 public class FindReplaceWindow : Window
 {
-    private TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
-    private TextBox FindInput = null!;
-    private TextBox ReplaceInput = null!;
+    private TextEditor.Controls.TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
+    private TextEditor.Controls.TextBox FindInput = null!;
+    private TextEditor.Controls.TextBox ReplaceInput = null!;
     private CheckBox IgnoreCaseCheckBox = null!;
     private RowDefinition ReplaceRow = null!;
     private ToggleButton ToggleButton = null!;
@@ -44,7 +44,7 @@ public class FindReplaceWindow : Window
         this.ReplaceButton.Visibility = visibility;
         this.ReplaceAllButton.Visibility = visibility;
     }
-    public FindReplaceWindow(TabControl tabControl, TextEditor.SearchMode mode)
+    public FindReplaceWindow(TextEditor.Controls.TabControl tabControl, TextEditor.SearchMode mode)
     {
         this.TabControl = tabControl;
 
@@ -66,7 +66,7 @@ public class FindReplaceWindow : Window
         // 无选区、修改模式 => 焦点->查找框
         // 有选区、修改模式 => 焦点->替换框|选区->查找框、替换框
 
-        var tabItem = tabControl.SelectedItem as TabItem;
+        var tabItem = tabControl.SelectedItem as TextEditor.Controls.TabItem;
         var hasTextBoxSelection = (
             tabItem != null
          && tabItem.TextBox.SelectionLength != 0
@@ -144,19 +144,24 @@ public class FindReplaceWindow : Window
         gridLayout.ColumnDefinitions.Add(column_3);
         gridLayout.ColumnDefinitions.Add(column_4);
 
-        var titleBar = new DockPanel{ Height = 20D };
+        var titleBar = new DockPanel
+        {
+            Height = 20D
+        };
         Grid.SetRow(titleBar, 0);
         Grid.SetColumn(titleBar, 0);
         Grid.SetColumnSpan(titleBar, 6);
         gridLayout.Children.Add(titleBar);
 
-        var closeButton = new Button{
+        var closeButton = new Button
+        {
             Content = "✕",
             Background = Brushes.White,
             BorderThickness = new Thickness(0D),
             ToolTip = new ToolTip{ Content = "Close (Esc)" }
         };
-        closeButton.Click += (object sender, RoutedEventArgs evt) => {
+        closeButton.Click += (object sender, RoutedEventArgs evt) =>
+        {
             this.Close();
         };
         WindowChrome.SetIsHitTestVisibleInChrome(closeButton, true);
@@ -164,14 +169,14 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(closeButton, 4);
         gridLayout.Children.Add(closeButton);
 
-        var toggleButton = new ToggleButton{
+        var toggleButton = new ToggleButton
+        {
             Background = Brushes.White,
             BorderThickness = new Thickness(0D)
         };
-        toggleButton.Click += (object sender, RoutedEventArgs evt) => {
-            ChangeReplacementAreaVisibility(
-                ((ToggleButton) sender).IsChecked == true
-            );
+        toggleButton.Click += (object sender, RoutedEventArgs evt) =>
+        {
+            ChangeReplacementAreaVisibility( ((ToggleButton) sender).IsChecked == true );
         };
         this.ToggleButton = toggleButton;
         Grid.SetRow(toggleButton, 1);
@@ -179,7 +184,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(toggleButton, 0);
         gridLayout.Children.Add(toggleButton);
 
-        var findInput = new TextBox{
+        var findInput = new TextEditor.Controls.TextBox
+        {
             AcceptsReturn = true,
             Margin = new Thickness(0D, 0D, 2D, 0D),
             ToolTip = new ToolTip{ Content = "Find What" }
@@ -189,7 +195,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(findInput, 1);
         gridLayout.Children.Add(findInput);
 
-        var ignoreCaseCheckBox = new CheckBox{
+        var ignoreCaseCheckBox = new CheckBox
+        {
             IsChecked = true,
             Content = "Ignore Case",
             VerticalAlignment = VerticalAlignment.Center,
@@ -200,7 +207,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(ignoreCaseCheckBox, 2);
         gridLayout.Children.Add(ignoreCaseCheckBox);
 
-        var findPreviousButton = new Button{
+        var findPreviousButton = new Button
+        {
             Content = "↑",
             Command = TextEditor.SearchCommands.FindPrevious,
             CommandTarget = this,
@@ -211,7 +219,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(findPreviousButton, 3);
         gridLayout.Children.Add(findPreviousButton);
 
-        var findNextButton = new Button{
+        var findNextButton = new Button
+        {
             Content = "↓",
             Command = TextEditor.SearchCommands.FindNext,
             CommandTarget = this,
@@ -221,7 +230,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(findNextButton, 4);
         gridLayout.Children.Add(findNextButton);
 
-        var replaceInput = new TextBox{
+        var replaceInput = new TextEditor.Controls.TextBox
+        {
             AcceptsReturn = true,
             Margin = new Thickness(0D, 0D, 2D, 0D),
             ToolTip = new ToolTip{ Content = "Replace As" }
@@ -231,7 +241,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(replaceInput, 1);
         gridLayout.Children.Add(replaceInput);
 
-        var replaceButton = new Button{
+        var replaceButton = new Button
+        {
             Content = "↓",
             Command = TextEditor.ReplacementCommands.Replace,
             CommandTarget = this,
@@ -243,7 +254,8 @@ public class FindReplaceWindow : Window
         Grid.SetColumn(replaceButton, 3);
         gridLayout.Children.Add(replaceButton);
 
-        var replaceAllButton = new Button{
+        var replaceAllButton = new Button
+        {
             Content = "⇊",
             Command = TextEditor.ReplacementCommands.ReplaceAll,
             CommandTarget = this,
@@ -260,7 +272,7 @@ public class FindReplaceWindow : Window
     {
         var window = ((FindReplaceWindow) sender);
         var searchTarget = window.FindInput.Text;
-        var textBox = ((TabItem) window.TabControl.SelectedItem).TextBox;
+        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionStart - 1;
         var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         var resultFirst = textBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
@@ -277,7 +289,7 @@ public class FindReplaceWindow : Window
     private static void FindPrevious_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
     {
         var window = ((FindReplaceWindow) sender);
-        if (window.TabControl.SelectedItem is TabItem tabItem)
+        if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (
                 window.FindInput.Text != ""          // 1. 待查找文本不为空：查找空串不在预期用法内。
@@ -290,7 +302,7 @@ public class FindReplaceWindow : Window
     {
         var window = ((FindReplaceWindow) sender);
         var searchTarget = window.FindInput.Text;
-        var textBox = ((TabItem) window.TabControl.SelectedItem).TextBox;
+        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionEnd;
         var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         var resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
@@ -307,7 +319,7 @@ public class FindReplaceWindow : Window
     private static void FindNext_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
     {
         var window = ((FindReplaceWindow) sender);
-        if (window.TabControl.SelectedItem is TabItem tabItem)
+        if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (
                 window.FindInput.Text != ""                                  // 1. 待查找文本不为空：查找空串不在预期用法内。
@@ -319,19 +331,19 @@ public class FindReplaceWindow : Window
     private static void Replace_Execute(object sender, ExecutedRoutedEventArgs evt)
     {
         var window = ((FindReplaceWindow) sender);
-        ((TabItem) window.TabControl.SelectedItem).TextBox.SelectedText = window.ReplaceInput.Text;
+        ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox.SelectedText = window.ReplaceInput.Text;
     }
     private static void ReplaceAll_Execute(object sender, ExecutedRoutedEventArgs evt)
     {
         var window = ((FindReplaceWindow) sender);
-        var textBox = ((TabItem) window.TabControl.SelectedItem).TextBox;
+        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         textBox.Text = textBox.Text.Replace(window.FindInput.Text, window.ReplaceInput.Text, stringComparison);
     }
     private static void Found_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
     {
         var window = ((FindReplaceWindow) sender);
-        if (window.TabControl.SelectedItem is TabItem tabItem)
+        if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             if (tabItem.TextBox.SelectedText.Equals(window.FindInput.Text, stringComparison))  // 要求至少已找到1个目标文本

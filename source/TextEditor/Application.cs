@@ -6,7 +6,6 @@ public class Application : System.Windows.Application
     private const string MutexName = $"Local\\Yyita.TextEditor.{{{GUID}}}";
     private const string PipeName  = $"Local\\Yyita.TextEditor.{{{GUID}}}";
     private static System.Threading.Mutex? Mutex;
-
     public Application()
     {
         this.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
@@ -14,29 +13,7 @@ public class Application : System.Windows.Application
     }
     private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs evt)
     {
-        var window = new System.Windows.Window{
-            Title = "未捕获的异常",
-            Width = 480D,
-            Height = 520D,
-            ResizeMode = System.Windows.ResizeMode.NoResize,
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
-        };
-        var textBox = new System.Windows.Controls.TextBox{
-            TextWrapping = System.Windows.TextWrapping.NoWrap,
-            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-            HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-            IsReadOnly = true,
-            BorderThickness = new System.Windows.Thickness(0D)
-        };
-        textBox.AppendText(DateTime.Now.ToString($"yyyy-MM-dd HH:mm:ss{Environment.NewLine}"));
-        textBox.AppendText($"{evt.Exception.Message}{Environment.NewLine}");
-        textBox.AppendText($"{evt.Exception.ToString()}{Environment.NewLine}");
-        window.Content = textBox;
-
-        System.Media.SystemSounds.Hand.Play();
-        window.Show();
-
-        evt.Handled = true;
+        Console.WriteLine( "[Error]" + " " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") );
     }
     protected override void OnStartup(System.Windows.StartupEventArgs evt)
     {
@@ -82,5 +59,11 @@ public class Application : System.Windows.Application
             editor.TabControl.New(arguments);
 
         return editor;
+    }
+    [STAThread]
+    static void Main()
+    {
+        var textEditor = new TextEditor.Application();
+        textEditor.Run();
     }
 }

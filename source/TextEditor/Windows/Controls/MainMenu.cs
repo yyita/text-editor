@@ -1,14 +1,14 @@
-﻿namespace TextEditor;
+﻿namespace TextEditor.Controls;
 
 public class MainMenu : System.Windows.Controls.Menu
 {
-    public MainMenu(TextEditor.TabControl tabControl)
+    public MainMenu(TextEditor.Controls.TabControl tabControl)
     {
         this.Items.Add(this.FileMenu_Build(tabControl));
         this.Items.Add(this.EditMenu_Build(tabControl));
         this.Items.Add(this.FormatMenu_Build());
     }
-    private System.Windows.Controls.MenuItem FileMenu_Build( TextEditor.TabControl tabControl )
+    private System.Windows.Controls.MenuItem FileMenu_Build( TextEditor.Controls.TabControl tabControl )
     {
         var menu = new System.Windows.Controls.MenuItem{ Header = "文件" };
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Open,  CommandTarget = tabControl });
@@ -20,7 +20,7 @@ public class MainMenu : System.Windows.Controls.Menu
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Close, CommandTarget = tabControl });
         return menu;
     }
-    private System.Windows.Controls.MenuItem EditMenu_Build( TextEditor.TabControl tabControl )
+    private System.Windows.Controls.MenuItem EditMenu_Build( TextEditor.Controls.TabControl tabControl )
     {
         var menu = new System.Windows.Controls.MenuItem{ Header = "编辑" };
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Undo });

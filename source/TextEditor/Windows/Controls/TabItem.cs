@@ -1,4 +1,4 @@
-﻿namespace TextEditor;
+﻿namespace TextEditor.Controls;
 
 public class TabItem : System.Windows.Controls.TabItem
 {
@@ -10,7 +10,14 @@ public class TabItem : System.Windows.Controls.TabItem
         // 加载数据：
         // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
         this.TextBox.BeginChange();
-        this.TextBox.Text = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+        using ( var reader = new System.IO.StreamReader(filePath, System.Text.Encoding.UTF8) )
+        {
+            string? line;
+            while ( ( line = reader.ReadLine() ) != null )
+            {
+                this.TextBox.AppendText($"{line}{Environment.NewLine}");
+            }
+        }
         this.TextBox.EndChange();
 
         this.RawData = this.TextBox.Text;
@@ -35,7 +42,7 @@ public class TabItem : System.Windows.Controls.TabItem
         System.Windows.Controls.Grid.SetColumn(textBox, 0);
         gridLayout.Children.Add(textBox);
 
-        var statusBar = new TextEditor.StatusBar();
+        var statusBar = new TextEditor.Controls.StatusBar();
         this.StatusBar = statusBar;
         System.Windows.Controls.Grid.SetRow(statusBar, 2);
         System.Windows.Controls.Grid.SetColumn(statusBar, 0);
@@ -43,9 +50,9 @@ public class TabItem : System.Windows.Controls.TabItem
 
         return gridLayout;
     }
-    private System.Windows.Controls.TextBox PathBox_Build()
+    private TextEditor.Controls.TextBox PathBox_Build()
     {
-        var box = new System.Windows.Controls.TextBox
+        var box = new TextEditor.Controls.TextBox
         {
             BorderThickness = new System.Windows.Thickness(0D),
             IsReadOnly = true,
@@ -53,21 +60,25 @@ public class TabItem : System.Windows.Controls.TabItem
         };
         return box;
     }
-    private System.Windows.Controls.TextBox TextBox_Build()
+    private TextEditor.Controls.TextBox TextBox_Build()
     {
-        var box = new TextEditor.TextBox
+        var box = new TextEditor.Controls.TextBox
         {
+            AcceptsReturn = true,
+            AcceptsTab = true,
+            TextWrapping = System.Windows.TextWrapping.NoWrap,
+            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+            FontFamily = new System.Windows.Media.FontFamily( "Fira Code" ),
+            FontSize = 16D,
             TabIndex = 0,  // 将 Tab 序提至最前，使切换至当前选项卡时的自动焦点落至自身
         };
         return box;
     }
-    public System.Windows.Controls.TextBox TextBox = null!;
-    public bool IsDirty
-    {
-        get => this.RawData != this.TextBox.Text;
-    }
+    public TextEditor.Controls.TextBox TextBox = null!;
+    public bool IsDirty { get => this.RawData != this.TextBox.Text; }
     private string RawData = null!;
-    private System.Windows.Controls.TextBox PathBox = null!;
+    private TextEditor.Controls.TextBox PathBox = null!;
     public string FilePath
     {
         get => this.PathBox.Text;
@@ -77,14 +88,14 @@ public class TabItem : System.Windows.Controls.TabItem
             this.PathBox.Text = value;
         }
     }
-    private TextEditor.StatusBar StatusBar = null!;
+    private TextEditor.Controls.StatusBar StatusBar = null!;
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
     {
         this.TextBox.Focus();
         this.TextBox.TextChanged += this.TextBox_OnTextChanged;
         this.TextBox.SelectionChanged += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
-            var textBox = (System.Windows.Controls.TextBox) sender;
+            var textBox = (TextEditor.Controls.TextBox) sender;
             this.StatusBar.Coordinates = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
         };
         this.TextBox.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs evt) =>

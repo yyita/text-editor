@@ -22,7 +22,7 @@ public class EditorWindow : Window
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), FindReplace_CanExecute));
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Modify,  OpenFindReplaceWindowCallback(TextEditor.SearchMode.Modify),  FindReplace_CanExecute));
     }
-    public TabControl TabControl = null!;
+    public TextEditor.Controls.TabControl TabControl = null!;
     private FindReplaceWindow? FindReplaceWindow = null;
     private Grid BuildGridLayout()
     {
@@ -30,13 +30,13 @@ public class EditorWindow : Window
         gridLayout.RowDefinitions.Add(new RowDefinition{ Height = GridLength.Auto });
         gridLayout.RowDefinitions.Add(new RowDefinition{ Height = new GridLength(1D, GridUnitType.Star) });
 
-        var tabControl = new TabControl();
+        var tabControl = new TextEditor.Controls.TabControl();
         this.TabControl = tabControl;
         Grid.SetRow(tabControl, 1);
         Grid.SetColumn(tabControl, 0);
         gridLayout.Children.Add(tabControl);
 
-        var topMenu = new TextEditor.MainMenu(tabControl);
+        var topMenu = new TextEditor.Controls.MainMenu(tabControl);
         Grid.SetRow(topMenu, 0);
         Grid.SetColumn(topMenu, 0);
         gridLayout.Children.Add(topMenu);
