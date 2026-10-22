@@ -7,11 +7,11 @@ public class TabItem : System.Windows.Controls.TabItem
         this.Content = this.BuildGridLayout();
         this.FilePath = filePath;
 
-        // 加载数据：
-        // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
+     // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
         this.TextBox.BeginChange();
         using ( var reader = new System.IO.StreamReader(filePath, System.Text.Encoding.UTF8) )
         {
+         // 读取数据：
             string? line;
             while ( ( line = reader.ReadLine() ) != null )
             {
@@ -132,7 +132,7 @@ public class TabItem : System.Windows.Controls.TabItem
     {
         if (this.IsDirty)
         {
-            System.IO.File.WriteAllText(this.FilePath, this.TextBox.Text, System.Text.Encoding.UTF8);
+            System.IO.File.WriteAllText(this.FilePath, this.TextBox.Text, this.StatusBar.Coding);
             this.RawData = this.TextBox.Text;
             this.Header = ((string) this.Header).Substring(1);
         }
