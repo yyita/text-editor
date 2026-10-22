@@ -63,8 +63,6 @@ public class FindReplaceWindow : Window
         // 有选区、查找模式 => 焦点->查找框|选区->查找框
         // 无选区、替换模式 => 焦点->查找框
         // 有选区、替换模式 => 焦点->替换框|选区->查找框
-        // 无选区、修改模式 => 焦点->查找框
-        // 有选区、修改模式 => 焦点->替换框|选区->查找框、替换框
 
         var tabItem = tabControl.SelectedItem as TextEditor.Controls.TabItem;
         var hasTextBoxSelection = (
@@ -86,18 +84,6 @@ public class FindReplaceWindow : Window
             case TextEditor.SearchMode.Replace:
                 if (hasTextBoxSelection)
                     this.ReplaceInput.Focus();
-                else
-                    this.FindInput.Focus();
-                ChangeReplacementAreaVisibility(true);
-                break;
-
-            case TextEditor.SearchMode.Modify:
-                if (hasTextBoxSelection)
-                {
-                    this.ReplaceInput.Text = tabItem!.TextBox.SelectedText;
-                    this.ReplaceInput.Focus();
-                    this.ReplaceInput.CaretMoveToDocumentEnd();
-                }
                 else
                     this.FindInput.Focus();
                 ChangeReplacementAreaVisibility(true);

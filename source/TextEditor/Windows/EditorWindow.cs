@@ -20,7 +20,6 @@ public class EditorWindow : Window
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.FileCommands.Open,    Open_Execute));
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Find,    OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    FindReplace_CanExecute));
         CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Modify,  OpenFindReplaceWindowCallback(TextEditor.SearchMode.Modify),  FindReplace_CanExecute));
     }
     public TextEditor.Controls.TabControl TabControl = null!;
     private FindReplaceWindow? FindReplaceWindow = null;
