@@ -2,8 +2,17 @@
 
 public class TabItem : System.Windows.Controls.TabItem
 {
+    public string Title
+    {
+        get => ((System.Windows.Controls.TextBlock) this.Header).Text;
+        set => ((System.Windows.Controls.TextBlock) this.Header).Text = value;
+    }
     public TabItem(string filePath)
     {
+        this.Header = new System.Windows.Controls.TextBlock
+        {
+            IsHitTestVisible = false
+        };
         this.Content = this.BuildGridLayout();
         this.FilePath = filePath;
 
@@ -91,7 +100,7 @@ public class TabItem : System.Windows.Controls.TabItem
         get => this.PathBox.Text;
         private set
         {
-            this.Header = System.IO.Path.GetFileName(value);
+            this.Title = System.IO.Path.GetFileName(value);
             this.PathBox.Text = value;
         }
     }
@@ -122,17 +131,18 @@ public class TabItem : System.Windows.Controls.TabItem
     }
     private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
     {
-        var header = (string) this.Header;
+        var title = this.Title;
+
         if (this.IsDirty)
         {
-            if (!header.StartsWith("*"))
+            if (!title.StartsWith("*"))
             {
-                this.Header = $"*{header}";
+                this.Title = $"*{title}";
             }
         }
-        else if (header.StartsWith("*"))
+        else if (title.StartsWith("*"))
         {
-            this.Header = header.Substring(1);
+            this.Title = title.Substring(1);
         }
     }
     public void Save()
@@ -141,7 +151,7 @@ public class TabItem : System.Windows.Controls.TabItem
         {
             System.IO.File.WriteAllText(this.FilePath, this.TextBox.Text, this.StatusBar.Coding);
             this.RawData = this.TextBox.Text;
-            this.Header = ((string) this.Header).Substring(1);
+            this.Title = this.Title.Substring(1);
         }
     }
 }
