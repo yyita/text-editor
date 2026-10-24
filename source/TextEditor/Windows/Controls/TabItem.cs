@@ -7,6 +7,13 @@ public class TabItem : System.Windows.Controls.TabItem
         this.Content = this.BuildGridLayout();
         this.FilePath = filePath;
 
+        var attributes = System.IO.File.GetAttributes(filePath);
+        if( (attributes & System.IO.FileAttributes.ReadOnly) > 0 )
+        {
+            this.TextBox.IsReadOnly = true;
+            this.StatusBar.TextMode = TextEditor.TextMode.ReadOnly;
+        }
+
      // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
         this.TextBox.BeginChange();
         using ( var reader = new System.IO.StreamReader(filePath, System.Text.Encoding.UTF8) )
