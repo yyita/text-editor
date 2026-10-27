@@ -4,6 +4,11 @@ public class TextBox : System.Windows.Controls.TextBox
 {
     public TextBox()
     {
+        this.ContextMenu = null;
+        this.BindingCommands();
+    }
+    private void BindingCommands()
+    {
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Undo,  Undo_Execute,  Undo_CanExecute));
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Redo,  Redo_Execute,  Redo_CanExecute));
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Cut,   Cut_Execute,   HasSelection_CanExecute));
