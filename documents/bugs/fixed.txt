@@ -1,0 +1,11 @@
+﻿《查找替换窗口关闭时焦点发生一次异常切换》
+  来源： 祖传(?)。
+  影响： 工作效率。
+  特征：
+    焦点的移交对象是异己的、末次点击过的、未最小化的窗口，
+    仅当主窗口是唯一未最小化的窗口时异己条件可忽略。
+  复现：
+    打开查找替换窗口，进行一次无结果的查找，关闭弹窗，关闭查找替换窗口。
+  相关链接：
+    https://telerik.com/forums/mainwindow-losts-focus-after-child-radwindow-is-closed
+    https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close
