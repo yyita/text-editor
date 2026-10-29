@@ -177,68 +177,60 @@ public class TextBox : System.Windows.Controls.TextBox
     // 为选区内所有行首添加缩进。
     // 对于空行，仅当选区内仅有空行时才生效。
     {
+        bool? hasNonEmptyLine = null;
         var (selectionFirstLine, selectionFinalLine) = this.GetSelectionLineRange();
-        bool isSelectionAllEmptyLines = true;  // 默认值，后面改。
-
-        this.BeginChange();
+        var lineCount = selectionFinalLine - selectionFirstLine + 1;
+        var lines = new List<String>(lineCount);
         for (int row = selectionFirstLine;  row <= selectionFinalLine;  row++)
         {
             var lineText = this.GetLineText(row);
-
-            // 跳过空行：
-            if (lineText == Environment.NewLine)
-                continue;
-
-            // 插入缩进：
-            var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
-            this.CaretMoveToLineIndex(row);
-            this.Write(new String(' ', insertSpaceCount));
-
-            if (isSelectionAllEmptyLines)
-            {
-                isSelectionAllEmptyLines = false;
-            }
+            lines.Add(lineText);
+            if (hasNonEmptyLine is null && lineText != Environment.NewLine)
+                hasNonEmptyLine = true;
         }
-        if (isSelectionAllEmptyLines)
+        var indent = new String(' ', this.IndentWidth);
+        for (int index = 0;  index < lineCount;  index++)
         {
-            var indent = new String(' ', this.IndentWidth);
-            for (int row = selectionFirstLine;  row <= selectionFinalLine;  row++)
+            var lineText = lines[index];
+            if (hasNonEmptyLine == true)
             {
-                this.CaretMoveToLineIndex(row);
-                this.Write(indent);
+                var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
+                lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
+            }
+            else
+            {
+                lines[index] = lineText.Insert(0, indent);
             }
         }
-        this.EndChange();
-
-        // 重设选区以提示生效区域并在重复当前操作时避免手动费力：
         var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);
-        var endLineText = this.GetLineText(selectionFinalLine);
-        var selectionLength = this.GetCharacterIndexFromLineIndex(selectionFinalLine) + endLineText.Length - selectionStart;
-        this.Select(selectionStart, selectionLength);
+        var selectionEnd = this.GetCharacterIndexFromLineIndex(selectionFinalLine);
+        var endLineLength = this.GetLineText(selectionFinalLine).Length;
+        this.BeginChange();
+        this.Select(selectionStart,  selectionEnd + endLineLength - selectionStart);
+        this.SelectedText = String.Concat(lines);
+        this.EndChange();
     }
     public void DedentRegion()
     {
+        var newLines = new System.Text.StringBuilder();
         var (selectionFirstLine, selectionFinalLine) = this.GetSelectionLineRange();
-
-        // 循环移除缩进：
-        this.BeginChange();
         for (int row = selectionFirstLine;  row <= selectionFinalLine;  row++)
         {
             var lineText = this.GetLineText(row);
             var leadingSpaceCount = lineText.CountLeadingSpaces();
-            // 跳过无缩进的行：
-            if (leadingSpaceCount == 0)
-                continue;
-            // 移除缩进：
-            var removeSpaceCount = this.CalculateRemoveSpaceCount(leadingSpaceCount);
-            this.Remove(this.GetCharacterIndexFromLineIndex(row), removeSpaceCount);
+            if (leadingSpaceCount != 0)
+            {
+                lineText = lineText.Remove(0, this.CalculateRemoveSpaceCount(leadingSpaceCount));
+            }
+            newLines.Append(lineText);
         }
-        this.EndChange();
-        // 重设选区以提示生效区域并在重复当前操作时避免手动费力：
         var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);
-        var endLineText = this.GetLineText(selectionFirstLine);
-        var selectionLength = this.GetCharacterIndexFromLineIndex(selectionFinalLine) + endLineText.Length - selectionStart;
-        this.Select(selectionStart, selectionLength);
+        var selectionEnd = this.GetCharacterIndexFromLineIndex(selectionFinalLine);
+        var endLineLength = this.GetLineText(selectionFinalLine).Length;
+        this.BeginChange();
+        this.Select(selectionStart,  selectionEnd + endLineLength - selectionStart);
+        this.SelectedText = newLines.ToString();
+        this.EndChange();
     }
     private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).Indent(); }
     private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).Dedent(); }
