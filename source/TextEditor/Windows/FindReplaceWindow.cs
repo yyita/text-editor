@@ -101,7 +101,6 @@ public class FindReplaceWindow : Window
         System.ComponentModel.CancelEventArgs evt
     ){
         base.OnClosing(evt);
-        // BUG #2026-10-15_1 修复：
         if (this.Owner != null)
             this.Owner.Activate();
     }
