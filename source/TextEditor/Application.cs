@@ -19,6 +19,21 @@ public class Application : System.Windows.Application
     {
         base.OnStartup(evt);
 
+        var oldDirectory = Environment.CurrentDirectory;
+        var newDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        if (String.Equals(
+            System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
+            System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
+            StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine($"Current working directory: {oldDirectory}");
+        }
+        else
+        {
+            Environment.CurrentDirectory = newDirectory;
+            Console.WriteLine($"Current working directory: {oldDirectory} -→ {newDirectory}");
+        }
+
         if (!this.IsValidCommandLineArguments(evt.Args))
         {
             this.Shutdown();
