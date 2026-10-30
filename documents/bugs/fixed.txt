@@ -9,3 +9,17 @@
   相关链接：
     https://telerik.com/forums/mainwindow-losts-focus-after-child-radwindow-is-closed
     https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close
+
+《作为默认应用启动后锁定参数文件所在的节点直至关闭》
+  来源： 祖传。
+  症状：
+    关闭参数文件对应的标签页后，其所在节点仍被锁定至编辑器关闭。
+  复现：
+    在资源管理器中将编辑器设置为一类文件的默认打开方式，
+    设置默认时启动的编辑器的工作目录是 C:\WINDOWS\system32 ，
+    这并不是作为默认应用启动，因此需要关闭它重新打开同类型文件。
+    尝试重命名该文件所在的任意节点，资源管理器提示文件夹正在使用。
+  修复：
+    继承 System.Windows.Application 重写 OnStartup ，
+    在调用 base.OnStartup(System.Windows.StartupEventArgs) 后，
+    将 Environment.CurrentDirectory 设置为 AppDomain.CurrentDomain.BaseDirectory 。
