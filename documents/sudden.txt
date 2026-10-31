@@ -1,4 +1,4 @@
-﻿该文件用于记录程序意外的期望行为的信息。
+该文件用于记录程序意外的期望行为的信息。
 意外代号仅作标识，不与任何事件日期相关。
 
 #2026-10-19_1
@@ -17,3 +17,5 @@ TextStore： https://github.com/dotnet/wpf/blob/65d15adece1df9a73e3d1abc11f8bbf9
 [ Caret 导航 ]
 TextBox 中常见字符按字形簇分字，部分字符则无效，无公开接口保证用户代码与其行为一致，影响程序内部一致性。
 无效字符举例： 🇦🇨、 🏴󠁧󠁢󠁥󠁮󠁧󠁿。
+
+《System.Text.Encoding.UTF8 带 BOM》

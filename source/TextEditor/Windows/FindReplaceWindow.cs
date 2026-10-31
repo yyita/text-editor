@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;  // Brushes
 using System.Windows.Shell;  // WindowChrome

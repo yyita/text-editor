@@ -1,4 +1,4 @@
-﻿namespace TextEditor.Controls;
+namespace TextEditor.Controls;
 
 public class TabItem : System.Windows.Controls.TabItem
 {

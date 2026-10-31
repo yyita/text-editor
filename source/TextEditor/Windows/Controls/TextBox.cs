@@ -1,4 +1,4 @@
-﻿namespace TextEditor.Controls;
+namespace TextEditor.Controls;
 
 public class TextBox : System.Windows.Controls.TextBox
 {

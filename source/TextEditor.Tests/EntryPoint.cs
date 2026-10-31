@@ -1,4 +1,4 @@
-﻿namespace TextEditor.Tests;
+namespace TextEditor.Tests;
 
 public static class EntryPoint
 {

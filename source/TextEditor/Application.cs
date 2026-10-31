@@ -1,4 +1,4 @@
-﻿namespace TextEditor;
+namespace TextEditor;
 
 public class Application : System.Windows.Application
 {

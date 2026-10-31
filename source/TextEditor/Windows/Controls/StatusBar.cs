@@ -1,4 +1,4 @@
-﻿namespace TextEditor.Controls;
+namespace TextEditor.Controls;
 
 public class StatusBar : System.Windows.Controls.Primitives.StatusBar
 {
@@ -47,7 +47,7 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
         }
     } = DefaultLineBreak;
 
-    private static System.Text.Encoding DefaultCoding = System.Text.Encoding.UTF8;
+    private static System.Text.Encoding DefaultCoding = new System.Text.UTF8Encoding();
     public System.Text.Encoding Coding
     {
         get;
