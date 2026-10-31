@@ -13,8 +13,6 @@ public class MainMenu : System.Windows.Controls.Menu
         var menu = new System.Windows.Controls.MenuItem{ Header = "文件" };
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Open,  CommandTarget = tabControl });
         menu.Items.Add(new System.Windows.Controls.Separator());
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Difference });
-        menu.Items.Add(new System.Windows.Controls.Separator());
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Save,  CommandTarget = tabControl });
         menu.Items.Add(new System.Windows.Controls.Separator());
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FileCommands.Close, CommandTarget = tabControl });
@@ -39,11 +37,6 @@ public class MainMenu : System.Windows.Controls.Menu
         var menu = new System.Windows.Controls.MenuItem{ Header = "格式" };
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Upper });
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Lower });
-        menu.Items.Add(new System.Windows.Controls.Separator());
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Binary });
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Octal });
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Decimal });
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Hexadecimal });
         menu.Items.Add(new System.Windows.Controls.Separator());
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Indent });
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Dedent });
