@@ -14,27 +14,9 @@ public class Application : System.Windows.Application
     {
         base.OnStartup(evt);
 
-        var oldDirectory = Environment.CurrentDirectory;
-        var newDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        if (String.Equals(
-            System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
-            System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
-            StringComparison.OrdinalIgnoreCase))
-        {
-            Console.WriteLine($"Current working directory: {oldDirectory}");
-        }
-        else
-        {
-            Environment.CurrentDirectory = newDirectory;
-            Console.WriteLine($"Current working directory: {oldDirectory} -→ {newDirectory}");
-        }
-
-        if (!this.IsValidCommandLineArguments(evt.Args))
-        {
-            this.Shutdown();
-            return;
-        }
-
+        /*******
+         单例应用
+         *******/
         TextEditor.Application.Mutex = new System.Threading.Mutex(true, TextEditor.Application.MutexName, out bool noInstance);
         if (!noInstance)
         {
@@ -43,23 +25,64 @@ public class Application : System.Windows.Application
             return;
         }
 
-        this.MainWindow = this.BuildMainWindow(evt.Args);
+        /************
+         命令行参数处理
+         ************/
+        var fullFilePaths = this.TryGetFullFilePaths(evt.Args);
+        if (fullFilePaths.Count() != evt.Args.Length)
+        {
+            this.Shutdown();
+            return;
+        }
+
+        /***************
+         “当前工作目录”补丁
+         ***************/
+        var oldDirectory = Environment.CurrentDirectory;
+        var newDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+        if(String.Equals(
+            System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
+            System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
+            StringComparison.OrdinalIgnoreCase
+        )){
+            Console.WriteLine($"Current working directory: {oldDirectory}");
+        }
+        else {
+            Environment.CurrentDirectory = newDirectory;
+            Console.WriteLine($"Current working directory: {oldDirectory} -→ {newDirectory}");
+        }
+
+        /********
+         启动主窗口
+         ********/
+        this.MainWindow = this.BuildMainWindow(fullFilePaths);
         this.MainWindow.Show();
     }
-    private bool IsValidCommandLineArguments(string[] arguments)
+    private String[] TryGetFullFilePaths(string[] arguments)
     {
-        // 效验命令行参数，仅在命令行参数全部有效时放行。
-        // 不过滤首个参数： Args 只包含传递的命令行参数。
-        object? firstInvalidArgument = null;
+        var fullFilePaths = new List<String>();
+        var failedArguments = new List<String>();
         foreach (string argument in arguments)
         {
-            if (!System.IO.File.Exists(argument))
-            {
-                System.Windows.MessageBox.Show($"File not found: {argument} .");
-                firstInvalidArgument ??= true;
+            try {
+                var fullFilePath = System.IO.Path.GetFullPath(argument);
+                if (!System.IO.File.Exists(fullFilePath))
+                    throw new Exception();
+                fullFilePaths.Add(fullFilePath);
+            }
+            catch (Exception) {
+                failedArguments.Add(argument);
             }
         }
-        return firstInvalidArgument == null;
+        if (failedArguments.Count() > 0)
+            System.Windows.MessageBox.Show(
+                String.Format(
+                    "Failed:\n{0}",
+                    String.Join(Environment.NewLine, failedArguments)
+                )
+            );
+        return fullFilePaths.ToArray();
     }
     private System.Windows.Window BuildMainWindow(string[] arguments)
     {
