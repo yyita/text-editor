@@ -7,14 +7,14 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
     private System.Windows.Controls.TextBlock? LineBreak_TextBlock;
     private System.Windows.Controls.TextBlock? Coding_TextBlock;
 
-    private static (int, int) DefaultCoordinates = (0, 0);
-    public (int, int) Coordinates
+    private static (int, int, int, int) DefaultCoordinates = (0, 1, 0, 1);
+    public (int, int, int, int) Coordinates
     {
         get;
         set
         {
-            var (row, column) = value;
-            this.Coordinates_TextBlock!.Text = $"第 {row + 1} 行，第 {column + 1} 列";
+            var (row, rowCount, column, columnCount) = value;
+            this.Coordinates_TextBlock!.Text = $"第 {row + 1} 行，共 {rowCount} 行；第 {column + 1} 列，共 {columnCount} 列";
             field = value;
         }
     } = DefaultCoordinates;

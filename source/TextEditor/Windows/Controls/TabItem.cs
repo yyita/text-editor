@@ -112,7 +112,11 @@ public class TabItem : System.Windows.Controls.TabItem
         this.TextBox.SelectionChanged += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
             var textBox = (TextEditor.Controls.TextBox) sender;
-            this.StatusBar.Coordinates = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
+            var (row, column) = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
+            this.StatusBar.Coordinates = (
+                row,  textBox.LineCount,
+                column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1
+            );
         };
         this.TextBox.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs evt) =>
         {
