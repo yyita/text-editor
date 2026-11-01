@@ -9,11 +9,6 @@ public class Application : System.Windows.Application
     public Application()
     {
         this.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
-        this.DispatcherUnhandledException += this.OnDispatcherUnhandledException;
-    }
-    private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs evt)
-    {
-        Console.WriteLine( "[Error]" + " " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") );
     }
     protected override void OnStartup(System.Windows.StartupEventArgs evt)
     {
