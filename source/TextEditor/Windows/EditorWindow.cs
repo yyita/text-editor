@@ -44,23 +44,27 @@ public class EditorWindow : Window
     }
     private static void Open_Execute(object sender, ExecutedRoutedEventArgs evt)
     {
-        if (sender is EditorWindow editorWindow) {
+        if (sender is EditorWindow editorWindow)
+        {
             var tabControl= editorWindow.TabControl;
-            var dialog = new Microsoft.Win32.OpenFileDialog{
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
                 Filter = "All Files|*.*",
             };
-            if (dialog.ShowDialog() == false) return;
+            if (dialog.ShowDialog() == false)
+                return;
             tabControl.New(dialog.FileName);
         }
     }
-    private static System.Windows.Input.ExecutedRoutedEventHandler OpenFindReplaceWindowCallback(
-        TextEditor.SearchMode mode
-    ){
-        return (object sender, ExecutedRoutedEventArgs evt) => {
+    private static System.Windows.Input.ExecutedRoutedEventHandler OpenFindReplaceWindowCallback(TextEditor.SearchMode mode)
+    {
+        return (object sender, ExecutedRoutedEventArgs evt) =>
+        {
             var editor = (EditorWindow) sender;
             var window = new FindReplaceWindow(editor.TabControl, mode){ Owner = editor };
             editor.FindReplaceWindow = window;
-            window.Closed += (object? sender, EventArgs evt) => {
+            window.Closed += (object? sender, EventArgs evt) =>
+            {
                 editor.FindReplaceWindow = null;
             };
             window.Show();
@@ -68,11 +72,9 @@ public class EditorWindow : Window
     }
     private static void FindReplace_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
     {
-        if (
-            sender is EditorWindow editor
+        if (sender is EditorWindow editor
          && editor.TabControl.SelectedItem != null
-         && editor.FindReplaceWindow == null
-        )
+         && editor.FindReplaceWindow == null)
            evt.CanExecute = true;
     }
 }

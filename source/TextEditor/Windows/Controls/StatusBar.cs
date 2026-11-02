@@ -19,7 +19,8 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
         }
     } = DefaultCoordinates;
 
-    public TextEditor.TextMode TextMode {
+    public TextEditor.TextMode TextMode
+    {
         get;
         set
         {

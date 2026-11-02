@@ -24,13 +24,15 @@ public class FindReplaceWindow : Window
         string toolTipContent;
         Visibility visibility;
 
-        if (value) {
+        if (value)
+        {
             height = GridLength.Auto;
             toggleButtonContent = "▲";
             toolTipContent = "Show Replace";
             visibility = Visibility.Visible;
         }
-        else {
+        else
+        {
             height = new GridLength(0D);
             toggleButtonContent = "▼";
             toolTipContent = "Hide Replace";
@@ -65,10 +67,8 @@ public class FindReplaceWindow : Window
         // 有选区、替换模式 => 焦点->替换框|选区->查找框
 
         var tabItem = tabControl.SelectedItem as TextEditor.Controls.TabItem;
-        var hasTextBoxSelection = (
-            tabItem != null
-         && tabItem.TextBox.SelectionLength != 0
-        );
+        var hasTextBoxSelection = (tabItem != null
+                                && tabItem.TextBox.SelectionLength != 0);
 
         if (hasTextBoxSelection)
             this.FindInput.Text = tabItem!.TextBox.SelectedText;
@@ -97,9 +97,8 @@ public class FindReplaceWindow : Window
         CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
         CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
     }
-    protected override void OnClosing(
-        System.ComponentModel.CancelEventArgs evt
-    ){
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs evt)
+    {
         base.OnClosing(evt);
         if (this.Owner != null)
             this.Owner.Activate();
@@ -259,7 +258,8 @@ public class FindReplaceWindow : Window
         var searchTarget = window.FindInput.Text;
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionStart - 1;
-        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
+                                                                           : StringComparison.Ordinal;
         var resultFirst = textBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
 
         if (resultFirst == -1)
@@ -276,10 +276,8 @@ public class FindReplaceWindow : Window
         var window = ((FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
-            if (
-                window.FindInput.Text != ""          // 1. 待查找文本不为空：查找空串不在预期用法内。
-             && tabItem.TextBox.SelectionStart != 0  // 2. 未超出文本下边界：边界之外找不到任何文本。
-            )
+            if (window.FindInput.Text != ""           // 1. 待查找文本不为空：查找空串不在预期用法内。
+             && tabItem.TextBox.SelectionStart != 0)  // 2. 未超出文本下边界：边界之外找不到任何文本。
                 evt.CanExecute = true;
         }
     }
@@ -289,7 +287,8 @@ public class FindReplaceWindow : Window
         var searchTarget = window.FindInput.Text;
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionEnd;
-        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
+                                                                           : StringComparison.Ordinal;
         var resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
 
         if (resultFirst == -1)
@@ -306,10 +305,8 @@ public class FindReplaceWindow : Window
         var window = ((FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
-            if (
-                window.FindInput.Text != ""                                  // 1. 待查找文本不为空：查找空串不在预期用法内。
-             && tabItem.TextBox.SelectionEnd != tabItem.TextBox.Text.Length  // 2. 未超出文本上边界：边界之外找不到任何文本。
-            )
+            if (window.FindInput.Text != ""                                   // 1. 待查找文本不为空：查找空串不在预期用法内。
+             && tabItem.TextBox.SelectionEnd != tabItem.TextBox.Text.Length)  // 2. 未超出文本上边界：边界之外找不到任何文本。
                 evt.CanExecute = true;
         }
     }
@@ -322,7 +319,8 @@ public class FindReplaceWindow : Window
     {
         var window = ((FindReplaceWindow) sender);
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
-        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
+                                                                           : StringComparison.Ordinal;
         textBox.Text = textBox.Text.Replace(window.FindInput.Text, window.ReplaceInput.Text, stringComparison);
     }
     private static void Found_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
@@ -330,7 +328,8 @@ public class FindReplaceWindow : Window
         var window = ((FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
-            var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
+                                                                               : StringComparison.Ordinal;
             if (tabItem.TextBox.SelectedText.Equals(window.FindInput.Text, stringComparison))  // 要求至少已找到1个目标文本
                 evt.CanExecute = true;
         }

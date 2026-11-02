@@ -29,10 +29,8 @@ public class TabItem : System.Windows.Controls.TabItem
         {
          // 读取数据：
             string? line;
-            while ( ( line = reader.ReadLine() ) != null )
-            {
+            while ( (line = reader.ReadLine()) != null )
                 this.TextBox.AppendText($"{line}{Environment.NewLine}");
-            }
         }
         this.TextBox.EndChange();
 
@@ -118,13 +116,9 @@ public class TabItem : System.Windows.Controls.TabItem
             if (evt.Key == System.Windows.Input.Key.Insert)
             {
                 if (this.StatusBar.TextMode == TextEditor.TextMode.Insert)
-                {
                     this.StatusBar.TextMode = TextEditor.TextMode.Overwrite;
-                }
                 else
-                {
                     this.StatusBar.TextMode = TextEditor.TextMode.Insert;
-                }
             }
         };
         this.UpdateStatusBar();
@@ -133,10 +127,8 @@ public class TabItem : System.Windows.Controls.TabItem
     {
         var textBox = this.TextBox;
         var (row, column) = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
-        this.StatusBar.Coordinates = (
-            row,  textBox.LineCount,
-            column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1
-        );
+        this.StatusBar.Coordinates = (row,  textBox.LineCount,
+                                      column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1);
     }
     private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
     {
@@ -145,14 +137,10 @@ public class TabItem : System.Windows.Controls.TabItem
         if (this.IsDirty)
         {
             if (!title.StartsWith("*"))
-            {
                 this.Title = $"*{title}";
-            }
         }
         else if (title.StartsWith("*"))
-        {
             this.Title = title.Substring(1);
-        }
     }
     public void Save()
     {

@@ -32,10 +32,8 @@ public class TextBox : System.Windows.Controls.TextBox
         {
             evt.Handled = true;
             var textBox = (System.Windows.Controls.TextBox) evt.Source;
-            if (
-                (System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0
-             && TextEditor.FormatCommands.Dedent.CanExecute(null, textBox)
-            )
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0
+             && TextEditor.FormatCommands.Dedent.CanExecute(null, textBox))
                 TextEditor.FormatCommands.Dedent.Execute(null, textBox);
             else if (TextEditor.FormatCommands.Indent.CanExecute(null, textBox))
                 TextEditor.FormatCommands.Indent.Execute(null, textBox);
@@ -197,10 +195,7 @@ public class TextBox : System.Windows.Controls.TextBox
                 var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
                 lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
             }
-            else
-            {
-                lines[index] = lineText.Insert(0, indent);
-            }
+            else lines[index] = lineText.Insert(0, indent);
         }
         var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);
         var selectionEnd = this.GetCharacterIndexFromLineIndex(selectionFinalLine);
@@ -219,9 +214,7 @@ public class TextBox : System.Windows.Controls.TextBox
             var lineText = this.GetLineText(row);
             var leadingSpaceCount = lineText.CountLeadingSpaces();
             if (leadingSpaceCount != 0)
-            {
                 lineText = lineText.Remove(0, this.CalculateRemoveSpaceCount(leadingSpaceCount));
-            }
             newLines.Append(lineText);
         }
         var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);

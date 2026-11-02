@@ -27,7 +27,8 @@ public class TabControl : System.Windows.Controls.TabControl
         if (!evt.Data.GetDataPresent(System.Windows.DataFormats.FileDrop, true))
             return;
         var filePaths = evt.Data.GetData(System.Windows.DataFormats.FileDrop, true) as string[];
-        evt.Effects = filePaths!.All(filePath => System.IO.File.Exists(filePath)) ? System.Windows.DragDropEffects.Copy : System.Windows.DragDropEffects.None;
+        evt.Effects = filePaths!.All(filePath => System.IO.File.Exists(filePath)) ? System.Windows.DragDropEffects.Copy
+                                                                                  : System.Windows.DragDropEffects.None;
         evt.Handled = true;
     }
     protected override void OnPreviewDrop(System.Windows.DragEventArgs evt)
@@ -44,10 +45,8 @@ public class TabControl : System.Windows.Controls.TabControl
     public TextEditor.Controls.TabItem? TryGetTabItem(string filePath)
     {
         foreach (TextEditor.Controls.TabItem existing in this.Items)
-        {
             if (existing.FilePath == filePath)
                 return existing;
-        }
         return null;
     }
     // 从单个文件新建标签页并选中。当文件已有对应标签页，选中时弹窗以提示，否则选中以提示。
@@ -104,7 +103,8 @@ public class TabControl : System.Windows.Controls.TabControl
     }
     private static void Save_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
-        if (evt.OriginalSource is TextEditor.Controls.TabControl tabControl) {
+        if (evt.OriginalSource is TextEditor.Controls.TabControl tabControl)
+        {
             TabItem? selectedItem = tabControl.SelectedItem as TabItem;
             evt.CanExecute = selectedItem != null && selectedItem.IsDirty;
         }

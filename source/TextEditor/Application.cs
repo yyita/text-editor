@@ -41,14 +41,12 @@ public class Application : System.Windows.Application
         var oldDirectory = Environment.CurrentDirectory;
         var newDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-        if(String.Equals(
-            System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
-            System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
-            StringComparison.OrdinalIgnoreCase
-        )){
+        if (String.Equals(System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
+                          System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
+                          StringComparison.OrdinalIgnoreCase))
             Console.WriteLine($"Current working directory: {oldDirectory}");
-        }
-        else {
+        else
+        {
             Environment.CurrentDirectory = newDirectory;
             Console.WriteLine($"Current working directory: {oldDirectory} -→ {newDirectory}");
         }
@@ -65,13 +63,15 @@ public class Application : System.Windows.Application
         var failedArguments = new List<String>();
         foreach (string argument in arguments)
         {
-            try {
+            try
+            {
                 var fullFilePath = System.IO.Path.GetFullPath(argument);
                 if (!System.IO.File.Exists(fullFilePath))
                     throw new Exception();
                 fullFilePaths.Add(fullFilePath);
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 failedArguments.Add(argument);
             }
         }
