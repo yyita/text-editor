@@ -39,6 +39,7 @@ public class TabControl : System.Windows.Controls.TabControl
             this.New(filePaths[0]);
         else
             this.New(filePaths);
+        evt.Handled = true;
     }
     public TextEditor.Controls.TabItem? TryGetTabItem(string filePath)
     {
