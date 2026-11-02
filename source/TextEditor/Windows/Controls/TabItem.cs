@@ -111,12 +111,7 @@ public class TabItem : System.Windows.Controls.TabItem
         this.TextBox.TextChanged += this.TextBox_OnTextChanged;
         this.TextBox.SelectionChanged += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
-            var textBox = (TextEditor.Controls.TextBox) sender;
-            var (row, column) = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
-            this.StatusBar.Coordinates = (
-                row,  textBox.LineCount,
-                column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1
-            );
+            this.UpdateStatusBar();
         };
         this.TextBox.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs evt) =>
         {
@@ -132,6 +127,16 @@ public class TabItem : System.Windows.Controls.TabItem
                 }
             }
         };
+        this.UpdateStatusBar();
+    }
+    private void UpdateStatusBar()
+    {
+        var textBox = this.TextBox;
+        var (row, column) = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
+        this.StatusBar.Coordinates = (
+            row,  textBox.LineCount,
+            column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1
+        );
     }
     private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
     {
