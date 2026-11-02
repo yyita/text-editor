@@ -9,13 +9,17 @@ public class TabItem : System.Windows.Controls.TabItem
     }
     public TabItem(string filePath)
     {
+        /* 构建内部控件 */
         this.Header = new System.Windows.Controls.TextBlock
         {
             IsHitTestVisible = false
         };
         this.Content = this.BuildGridLayout();
+
+        /* 设置路径与地址栏文本 */
         this.FilePath = filePath;
 
+        /* 只读文件启用只读模式 */
         var attributes = System.IO.File.GetAttributes(filePath);
         if( (attributes & System.IO.FileAttributes.ReadOnly) > 0 )
         {
@@ -23,18 +27,20 @@ public class TabItem : System.Windows.Controls.TabItem
             this.StatusBar.TextMode = TextEditor.TextMode.ReadOnly;
         }
 
-     // BeginChange、EndChange： 避免触发 TextChanged 和 SelectionChanged 事件导致意外行为。
+        /* 载入文件数据 */
         this.TextBox.BeginChange();
         using ( var reader = new System.IO.StreamReader(filePath, System.Text.Encoding.UTF8) )
         {
-         // 读取数据：
             string? line;
             while ( (line = reader.ReadLine()) != null )
                 this.TextBox.AppendText($"{line}{Environment.NewLine}");
         }
         this.TextBox.EndChange();
 
+        /* 记录原始数据 */
         this.RawData = this.TextBox.Text;
+
+        /* 添加事件回调 */
         Loaded += OnLoaded;
     }
     private System.Windows.Controls.Grid BuildGridLayout()
