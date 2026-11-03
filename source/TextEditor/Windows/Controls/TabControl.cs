@@ -12,6 +12,11 @@ public class TabControl : System.Windows.Controls.TabControl
         System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Controls.TabControl), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Save,  Save_Execute,  Save_CanExecute));
         System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Controls.TabControl), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Close, Close_Execute, Close_CanExecute));
     }
+    public void CloseTab(TextEditor.Controls.TabItem tab)
+    {
+        tab.CleanUp();
+        this.Items.Remove(tab);
+    }
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
     {
         this.MouseDown += OnMiddleButtonPressed;
@@ -19,8 +24,8 @@ public class TabControl : System.Windows.Controls.TabControl
     private void OnMiddleButtonPressed(object sender, System.Windows.Input.MouseButtonEventArgs evt)
     {
         if (evt.MiddleButton != System.Windows.Input.MouseButtonState.Pressed || evt.Handled) return;
-        if (evt.Source is TextEditor.Controls.TabItem tabItem)
-            this.Items.Remove(tabItem);
+        if (evt.Source is TextEditor.Controls.TabItem tab)
+            this.CloseTab(tab);
     }
     protected override void OnPreviewDragOver(System.Windows.DragEventArgs evt)
     {
@@ -112,7 +117,7 @@ public class TabControl : System.Windows.Controls.TabControl
     private static void Close_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         if (evt.OriginalSource is TextEditor.Controls.TabControl tabControl)
-            tabControl.Items.Remove(tabControl.SelectedItem);
+            tabControl.CloseTab( (TextEditor.Controls.TabItem) tabControl.SelectedItem );
     }
     private static void Close_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {

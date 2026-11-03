@@ -28,8 +28,18 @@ public class TabItem : System.Windows.Controls.TabItem
         }
 
         /* 载入文件数据 */
+        this.FileStream = new System.IO.FileStream
+        (
+            filePath,
+            System.IO.FileMode.Open,
+            System.IO.FileAccess.ReadWrite,
+            System.IO.FileShare.Read
+        );
         this.TextBox.BeginChange();
-        using ( var reader = new System.IO.StreamReader(filePath, new System.Text.UTF8Encoding()) )
+        using ( var reader = new System.IO.StreamReader(
+            this.FileStream, new System.Text.UTF8Encoding(),
+            detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true) )
         {
             string? line;
             while ( (line = reader.ReadLine()) != null )
@@ -42,6 +52,10 @@ public class TabItem : System.Windows.Controls.TabItem
 
         /* 添加事件回调 */
         Loaded += OnLoaded;
+    }
+    public void CleanUp()
+    {
+        this.FileStream?.Dispose();
     }
     private System.Windows.Controls.Grid BuildGridLayout()
     {
@@ -108,6 +122,7 @@ public class TabItem : System.Windows.Controls.TabItem
             this.PathBox.Text = value;
         }
     }
+    public System.IO.FileStream? FileStream = null;
     private TextEditor.Controls.StatusBar StatusBar = null!;
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
     {
@@ -150,10 +165,18 @@ public class TabItem : System.Windows.Controls.TabItem
     }
     public void Save()
     {
-        if (this.IsDirty)
+        if (this.IsDirty && this.FileStream != null)
         {
-            System.IO.File.WriteAllText(this.FilePath, this.TextBox.Text, this.StatusBar.Coding);
-            this.RawData = this.TextBox.Text;
+            var textBox = this.TextBox;
+            var fileStream = this.FileStream;
+
+            byte[] bytes = this.StatusBar.Coding.GetBytes(textBox.Text);
+            fileStream.Seek(0, System.IO.SeekOrigin.Begin);
+            fileStream.Write(bytes, 0, bytes.Length);
+            fileStream.SetLength(bytes.Length);
+            fileStream.Flush();
+
+            this.RawData = textBox.Text;
             this.Title = this.Title.Substring(1);
         }
     }
