@@ -29,7 +29,7 @@ public class TabItem : System.Windows.Controls.TabItem
 
         /* 载入文件数据 */
         this.TextBox.BeginChange();
-        using ( var reader = new System.IO.StreamReader(filePath, System.Text.Encoding.UTF8) )
+        using ( var reader = new System.IO.StreamReader(filePath, new System.Text.UTF8Encoding()) )
         {
             string? line;
             while ( (line = reader.ReadLine()) != null )
