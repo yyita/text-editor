@@ -13,13 +13,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <AssemblyTitle>Text Editor</AssemblyTitle>
+    <AssemblyTitle>文本编辑器</AssemblyTitle>
     <AssemblyName>editor</AssemblyName>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <AssemblyTitle>Text Editor (Debug)</AssemblyTitle>
+    <AssemblyTitle>文本编辑器（调试版）</AssemblyTitle>
     <AssemblyName>editor-debug</AssemblyName>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
