@@ -1,15 +1,34 @@
-namespace TextEditor;
+namespace TextEditor.Windows;
 
 public class Application : System.Windows.Application
 {
-    private const string GUID = "AA29FA7E-E4F1-49E0-9F54-83B3B777B442";
-    private const string MutexName = $"Local\\Yyita.TextEditor.{{{GUID}}}";
-    private const string PipeName  = $"Local\\Yyita.TextEditor.{{{GUID}}}";
-    private static System.Threading.Mutex? Mutex;
+    /*******
+     程序入口
+     *******/
+    [STAThread]
+    static void Main()
+    {
+        (new TextEditor.Windows.Application()).Run();
+    }
+
+    /*******
+     构造函数
+     *******/
     public Application()
     {
         this.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
     }
+
+    /*********************
+     数据对象（字段 (Fields)）
+     *********************/
+    private const String GUID = "AA29FA7E-E4F1-49E0-9F54-83B3B777B442";
+    private const String MutexName = $"Local\\Yyita.TextEditor.{{{GUID}}}";
+    private static System.Threading.Mutex? Mutex;
+
+    /*******
+     方法函数
+     *******/
     protected override void OnStartup(System.Windows.StartupEventArgs evt)
     {
         base.OnStartup(evt);
@@ -17,7 +36,7 @@ public class Application : System.Windows.Application
         /*******
          单例应用
          *******/
-        TextEditor.Application.Mutex = new System.Threading.Mutex(true, TextEditor.Application.MutexName, out bool noInstance);
+        TextEditor.Windows.Application.Mutex = new System.Threading.Mutex(true, TextEditor.Windows.Application.MutexName, out bool noInstance);
         if (!noInstance)
         {
             System.Windows.MessageBox.Show("Only one instance of this app is allowed.");
@@ -25,78 +44,60 @@ public class Application : System.Windows.Application
             return;
         }
 
-        /************
-         命令行参数处理
-         ************/
-        var fullFilePaths = this.TryGetFullFilePaths(evt.Args);
-        if (fullFilePaths.Count() != evt.Args.Length)
-        {
-            this.Shutdown();
-            return;
-        }
-
         /***************
          “当前工作目录”补丁
          ***************/
-        var oldDirectory = Environment.CurrentDirectory;
-        var newDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var oldWorkingDirectory = Environment.CurrentDirectory;
+        var newWorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-        if (String.Equals(System.IO.Path.TrimEndingDirectorySeparator(oldDirectory),
-                          System.IO.Path.TrimEndingDirectorySeparator(newDirectory),
+        if (String.Equals(System.IO.Path.TrimEndingDirectorySeparator(oldWorkingDirectory),
+                          System.IO.Path.TrimEndingDirectorySeparator(newWorkingDirectory),
                           StringComparison.OrdinalIgnoreCase))
-            Console.WriteLine($"Current working directory: {oldDirectory}");
+            Console.WriteLine($"Current working directory: {oldWorkingDirectory}");
         else
         {
-            Environment.CurrentDirectory = newDirectory;
-            Console.WriteLine($"Current working directory: {oldDirectory} -→ {newDirectory}");
+            Environment.CurrentDirectory = newWorkingDirectory;
+            Console.WriteLine($"Current working directory: {oldWorkingDirectory} -→ {newWorkingDirectory}");
         }
+
+        /********
+         准备主窗口
+         ********/
+        var editor = new TextEditor.Windows.EditorWindow();
+        if (evt.Args.Length != 0)
+        {
+            /************
+             命令行参数处理
+             ************/
+            var fullFilePaths = new List<String>();
+            var failedArguments = new List<String>();
+            foreach (String argument in evt.Args)
+            {
+                try
+                {
+                    var fullFilePath = System.IO.Path.GetFullPath(argument, oldWorkingDirectory);
+                    if (!System.IO.File.Exists(fullFilePath))
+                        throw new Exception();
+                    fullFilePaths.Add(fullFilePath);
+                }
+                catch (Exception)
+                {
+                    failedArguments.Add(argument);
+                }
+            }
+            if (failedArguments.Count() > 0)
+            {
+                System.Windows.MessageBox.Show(String.Format("Failed:\n{0}",  String.Join(Environment.NewLine, failedArguments)));
+                this.Shutdown();
+                return;
+            }
+            editor.TabControl.New(fullFilePaths.ToArray());
+        }
+        this.MainWindow = editor;
 
         /********
          启动主窗口
          ********/
-        this.MainWindow = this.BuildMainWindow(fullFilePaths);
         this.MainWindow.Show();
-    }
-    private String[] TryGetFullFilePaths(string[] arguments)
-    {
-        var fullFilePaths = new List<String>();
-        var failedArguments = new List<String>();
-        foreach (string argument in arguments)
-        {
-            try
-            {
-                var fullFilePath = System.IO.Path.GetFullPath(argument);
-                if (!System.IO.File.Exists(fullFilePath))
-                    throw new Exception();
-                fullFilePaths.Add(fullFilePath);
-            }
-            catch (Exception)
-            {
-                failedArguments.Add(argument);
-            }
-        }
-        if (failedArguments.Count() > 0)
-            System.Windows.MessageBox.Show(
-                String.Format(
-                    "Failed:\n{0}",
-                    String.Join(Environment.NewLine, failedArguments)
-                )
-            );
-        return fullFilePaths.ToArray();
-    }
-    private System.Windows.Window BuildMainWindow(string[] arguments)
-    {
-        var editor = new EditorWindow();
-
-        if (arguments.Length > 0)
-            editor.TabControl.New(arguments);
-
-        return editor;
-    }
-    [STAThread]
-    static void Main()
-    {
-        var textEditor = new TextEditor.Application();
-        textEditor.Run();
     }
 }

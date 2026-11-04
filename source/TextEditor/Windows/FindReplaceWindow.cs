@@ -1,70 +1,23 @@
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;  // Brushes
-using System.Windows.Shell;  // WindowChrome
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;  // ToggleButton
+namespace TextEditor.Windows;
 
-namespace TextEditor;
-
-public class FindReplaceWindow : Window
+public class FindReplaceWindow : System.Windows.Window
 {
-    private TextEditor.Controls.TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
-    private TextEditor.Controls.TextBox FindInput = null!;
-    private TextEditor.Controls.TextBox ReplaceInput = null!;
-    private CheckBox IgnoreCaseCheckBox = null!;
-    private RowDefinition ReplaceRow = null!;
-    private ToggleButton ToggleButton = null!;
-    private Button ReplaceButton = null!;
-    private Button ReplaceAllButton = null!;
-    private void ChangeReplacementAreaVisibility(bool value)
-    {
-        GridLength height;
-        string toggleButtonContent;
-        string toolTipContent;
-        Visibility visibility;
-
-        if (value)
-        {
-            height = GridLength.Auto;
-            toggleButtonContent = "▲";
-            toolTipContent = "Show Replace";
-            visibility = Visibility.Visible;
-        }
-        else
-        {
-            height = new GridLength(0D);
-            toggleButtonContent = "▼";
-            toolTipContent = "Hide Replace";
-            visibility = Visibility.Collapsed;
-        }
-
-        ReplaceRow.Height = height;
-        this.ToggleButton.Content = toggleButtonContent;
-        this.ToggleButton.ToolTip = new ToolTip{ Content = toolTipContent };
-        this.ReplaceInput.Visibility = visibility;
-        this.ReplaceButton.Visibility = visibility;
-        this.ReplaceAllButton.Visibility = visibility;
-    }
+    /*******
+     构造函数
+     *******/
     public FindReplaceWindow(TextEditor.Controls.TabControl tabControl, TextEditor.SearchMode mode)
     {
+        this.SizeToContent = System.Windows.SizeToContent.WidthAndHeight;
+        this.UseLayoutRounding = true;
+        this.WindowStyle = System.Windows.WindowStyle.None;
+        this.ResizeMode = System.Windows.ResizeMode.NoResize;
+        this.ShowInTaskbar = false;
+        this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+
         this.TabControl = tabControl;
 
-        this.SizeToContent = SizeToContent.WidthAndHeight;
-        this.UseLayoutRounding = true;
-        this.WindowStyle = WindowStyle.None;
-        this.ResizeMode = ResizeMode.NoResize;
-        this.ShowInTaskbar = false;
-        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-        WindowChrome.SetWindowChrome(this, new WindowChrome{ CaptionHeight = 20D });
-        Content = BuildGridLayout();
-
-        // “自动填入选区”与“自动调整焦点”的行为对照：
-        // 无选区、查找模式 => 焦点->查找框
-        // 有选区、查找模式 => 焦点->查找框|选区->查找框
-        // 无选区、替换模式 => 焦点->查找框
-        // 有选区、替换模式 => 焦点->替换框|选区->查找框
+        System.Windows.Shell.WindowChrome.SetWindowChrome(this, new System.Windows.Shell.WindowChrome{ CaptionHeight = 20D });
+        this.Content = this.BuildGridLayout();
 
         var tabItem = tabControl.SelectedItem as TextEditor.Controls.TabItem;
         var hasTextBoxSelection = (tabItem != null
@@ -73,188 +26,47 @@ public class FindReplaceWindow : Window
         if (hasTextBoxSelection)
             this.FindInput.Text = tabItem!.TextBox.SelectedText;
 
-        switch (mode)
+        if (mode == TextEditor.SearchMode.Find)
         {
-            case TextEditor.SearchMode.Find:
+            this.FindInput.Focus();
+            this.FindInput.CaretMoveToDocumentEnd();
+            this.ChangeReplacementAreaVisibility(false);
+        }
+        else if (mode == TextEditor.SearchMode.Replace)
+        {
+            if (hasTextBoxSelection)
+                this.ReplaceInput.Focus();
+            else
                 this.FindInput.Focus();
-                this.FindInput.CaretMoveToDocumentEnd();
-                ChangeReplacementAreaVisibility(false);
-                break;
-
-            case TextEditor.SearchMode.Replace:
-                if (hasTextBoxSelection)
-                    this.ReplaceInput.Focus();
-                else
-                    this.FindInput.Focus();
-                ChangeReplacementAreaVisibility(true);
-                break;
+            this.ChangeReplacementAreaVisibility(true);
         }
     }
     static FindReplaceWindow()
     {
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.SearchCommands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.SearchCommands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(FindReplaceWindow), new CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
     }
-    protected override void OnClosing(System.ComponentModel.CancelEventArgs evt)
+
+    /*********************
+     数据对象（字段 (Fields)）
+     *********************/
+    private TextEditor.Controls.TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
+    private TextEditor.Controls.TextBox FindInput = null!;
+    private TextEditor.Controls.TextBox ReplaceInput = null!;
+    private System.Windows.Controls.CheckBox IgnoreCaseCheckBox = null!;
+    private System.Windows.Controls.RowDefinition ReplaceRow = null!;
+    private System.Windows.Controls.Primitives.ToggleButton ToggleButton = null!;
+    private System.Windows.Controls.Button ReplaceButton = null!;
+    private System.Windows.Controls.Button ReplaceAllButton = null!;
+
+    /*******
+     类级函数
+     *******/
+    private static void FindPrevious_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        base.OnClosing(evt);
-        if (this.Owner != null)
-            this.Owner.Activate();
-    }
-    private Grid BuildGridLayout()
-    {
-        var gridLayout = new Grid();
-
-        var row_0 = new RowDefinition{ Height = GridLength.Auto };
-        gridLayout.RowDefinitions.Add(row_0);
-
-        var row_1 = new RowDefinition{ Height = GridLength.Auto };
-        gridLayout.RowDefinitions.Add(row_1);
-
-        var row_2 = new RowDefinition();
-        this.ReplaceRow = row_2;
-        gridLayout.RowDefinitions.Add(row_2);
-
-        var column_0 = new ColumnDefinition{ Width = new GridLength(20D) };
-        var column_1 = new ColumnDefinition{ Width = new GridLength(150D) };
-        var column_2 = new ColumnDefinition{ Width = GridLength.Auto };
-        var column_3 = new ColumnDefinition{ Width = new GridLength(20D) };
-        var column_4 = new ColumnDefinition{ Width = new GridLength(20D) };
-        gridLayout.ColumnDefinitions.Add(column_0);
-        gridLayout.ColumnDefinitions.Add(column_1);
-        gridLayout.ColumnDefinitions.Add(column_2);
-        gridLayout.ColumnDefinitions.Add(column_3);
-        gridLayout.ColumnDefinitions.Add(column_4);
-
-        var titleBar = new DockPanel
-        {
-            Height = 20D
-        };
-        Grid.SetRow(titleBar, 0);
-        Grid.SetColumn(titleBar, 0);
-        Grid.SetColumnSpan(titleBar, 6);
-        gridLayout.Children.Add(titleBar);
-
-        var closeButton = new Button
-        {
-            Content = "✕",
-            Background = Brushes.White,
-            BorderThickness = new Thickness(0D),
-            ToolTip = new ToolTip{ Content = "Close (Esc)" }
-        };
-        closeButton.Click += (object sender, RoutedEventArgs evt) =>
-        {
-            this.Close();
-        };
-        WindowChrome.SetIsHitTestVisibleInChrome(closeButton, true);
-        Grid.SetRow(closeButton, 0);
-        Grid.SetColumn(closeButton, 4);
-        gridLayout.Children.Add(closeButton);
-
-        var toggleButton = new ToggleButton
-        {
-            Background = Brushes.White,
-            BorderThickness = new Thickness(0D)
-        };
-        toggleButton.Click += (object sender, RoutedEventArgs evt) =>
-        {
-            ChangeReplacementAreaVisibility( ((ToggleButton) sender).IsChecked == true );
-        };
-        this.ToggleButton = toggleButton;
-        Grid.SetRow(toggleButton, 1);
-        Grid.SetRowSpan(toggleButton, 2);
-        Grid.SetColumn(toggleButton, 0);
-        gridLayout.Children.Add(toggleButton);
-
-        var findInput = new TextEditor.Controls.TextBox
-        {
-            AcceptsReturn = true,
-            Margin = new Thickness(0D, 0D, 2D, 0D),
-            ToolTip = new ToolTip{ Content = "Find What" }
-        };
-        this.FindInput = findInput;
-        Grid.SetRow(findInput, 1);
-        Grid.SetColumn(findInput, 1);
-        gridLayout.Children.Add(findInput);
-
-        var ignoreCaseCheckBox = new CheckBox
-        {
-            IsChecked = true,
-            Content = "Ignore Case",
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(2D, 0D, 2D, 0D)
-        };
-        this.IgnoreCaseCheckBox = ignoreCaseCheckBox;
-        Grid.SetRow(ignoreCaseCheckBox, 1);
-        Grid.SetColumn(ignoreCaseCheckBox, 2);
-        gridLayout.Children.Add(ignoreCaseCheckBox);
-
-        var findPreviousButton = new Button
-        {
-            Content = "↑",
-            Command = TextEditor.SearchCommands.FindPrevious,
-            CommandTarget = this,
-            Margin = new Thickness(2D, 0D, 0D, 0D),
-            ToolTip = new ToolTip{ Content = "Find Previous (Ctrl+Up)" }
-        };
-        Grid.SetRow(findPreviousButton, 1);
-        Grid.SetColumn(findPreviousButton, 3);
-        gridLayout.Children.Add(findPreviousButton);
-
-        var findNextButton = new Button
-        {
-            Content = "↓",
-            Command = TextEditor.SearchCommands.FindNext,
-            CommandTarget = this,
-            ToolTip = new ToolTip{ Content = "Find Next (Ctrl+Down)" }
-        };
-        Grid.SetRow(findNextButton, 1);
-        Grid.SetColumn(findNextButton, 4);
-        gridLayout.Children.Add(findNextButton);
-
-        var replaceInput = new TextEditor.Controls.TextBox
-        {
-            AcceptsReturn = true,
-            Margin = new Thickness(0D, 0D, 2D, 0D),
-            ToolTip = new ToolTip{ Content = "Replace As" }
-        };
-        this.ReplaceInput = replaceInput;
-        Grid.SetRow(replaceInput, 2);
-        Grid.SetColumn(replaceInput, 1);
-        gridLayout.Children.Add(replaceInput);
-
-        var replaceButton = new Button
-        {
-            Content = "↓",
-            Command = TextEditor.ReplacementCommands.Replace,
-            CommandTarget = this,
-            Margin = new Thickness(2D, 0D, 0D, 0D),
-            ToolTip = new ToolTip{ Content = "Replace (Ctrl+Enter)" }
-        };
-        this.ReplaceButton = replaceButton;
-        Grid.SetRow(replaceButton, 2);
-        Grid.SetColumn(replaceButton, 3);
-        gridLayout.Children.Add(replaceButton);
-
-        var replaceAllButton = new Button
-        {
-            Content = "⇊",
-            Command = TextEditor.ReplacementCommands.ReplaceAll,
-            CommandTarget = this,
-            ToolTip = new ToolTip{ Content = "Replace All (Ctrl+Shift+Enter)" }
-        };
-        this.ReplaceAllButton = replaceAllButton;
-        Grid.SetRow(replaceAllButton, 2);
-        Grid.SetColumn(replaceAllButton, 4);
-        gridLayout.Children.Add(replaceAllButton);
-
-        return gridLayout;
-    }
-    private static void FindPrevious_Execute(object sender, ExecutedRoutedEventArgs evt)
-    {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         var searchTarget = window.FindInput.Text;
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionStart - 1;
@@ -264,16 +76,16 @@ public class FindReplaceWindow : Window
 
         if (resultFirst == -1)
         {
-            MessageBox.Show(window, "Text not found.");
+            System.Windows.MessageBox.Show(window, "Text not found.");
             return;
         }
 
         textBox.Focus();
         textBox.Select(resultFirst, searchTarget.Length);
     }
-    private static void FindPrevious_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
+    private static void FindPrevious_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (window.FindInput.Text != ""           // 1. 待查找文本不为空：查找空串不在预期用法内。
@@ -281,9 +93,9 @@ public class FindReplaceWindow : Window
                 evt.CanExecute = true;
         }
     }
-    private static void FindNext_Execute(object sender, ExecutedRoutedEventArgs evt)
+    private static void FindNext_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         var searchTarget = window.FindInput.Text;
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var searchStart = textBox.SelectionEnd;
@@ -293,16 +105,16 @@ public class FindReplaceWindow : Window
 
         if (resultFirst == -1)
         {
-            MessageBox.Show(window, "Text not found.");
+            System.Windows.MessageBox.Show(window, "Text not found.");
             return;
         }
 
         textBox.Focus();
         textBox.Select(resultFirst, searchTarget.Length);
     }
-    private static void FindNext_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
+    private static void FindNext_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (window.FindInput.Text != ""                                   // 1. 待查找文本不为空：查找空串不在预期用法内。
@@ -310,22 +122,22 @@ public class FindReplaceWindow : Window
                 evt.CanExecute = true;
         }
     }
-    private static void Replace_Execute(object sender, ExecutedRoutedEventArgs evt)
+    private static void Replace_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox.SelectedText = window.ReplaceInput.Text;
     }
-    private static void ReplaceAll_Execute(object sender, ExecutedRoutedEventArgs evt)
+    private static void ReplaceAll_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
         var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
                                                                            : StringComparison.Ordinal;
         textBox.Text = textBox.Text.Replace(window.FindInput.Text, window.ReplaceInput.Text, stringComparison);
     }
-    private static void Found_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
+    private static void Found_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
-        var window = ((FindReplaceWindow) sender);
+        var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
@@ -333,5 +145,219 @@ public class FindReplaceWindow : Window
             if (tabItem.TextBox.SelectedText.Equals(window.FindInput.Text, stringComparison))  // 要求至少已找到1个目标文本
                 evt.CanExecute = true;
         }
+    }
+
+    /*******
+     方法函数
+     *******/
+    private void ChangeReplacementAreaVisibility(Boolean value)
+    {
+        System.Windows.GridLength height;
+        String toggleButtonContent;
+        String toolTipContent;
+        System.Windows.Visibility visibility;
+
+        if (value)
+        {
+            height = System.Windows.GridLength.Auto;
+            toggleButtonContent = "▲";
+            toolTipContent = "Show Replace";
+            visibility = System.Windows.Visibility.Visible;
+        }
+        else
+        {
+            height = new System.Windows.GridLength(0D);
+            toggleButtonContent = "▼";
+            toolTipContent = "Hide Replace";
+            visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        this.ReplaceRow.Height = height;
+        this.ToggleButton.Content = toggleButtonContent;
+        this.ToggleButton.ToolTip = new System.Windows.Controls.ToolTip{ Content = toolTipContent };
+        this.ReplaceInput.Visibility = visibility;
+        this.ReplaceButton.Visibility = visibility;
+        this.ReplaceAllButton.Visibility = visibility;
+    }
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs evt)
+    {
+        base.OnClosing(evt);
+        if (this.Owner != null)
+            this.Owner.Activate();
+    }
+    private System.Windows.Controls.Grid BuildGridLayout()
+    {
+        var gridLayout = new System.Windows.Controls.Grid();
+
+        this.ReplaceRow = new System.Windows.Controls.RowDefinition();
+        gridLayout.RowDefinitions.Add( new System.Windows.Controls.RowDefinition{ Height = System.Windows.GridLength.Auto } );
+        gridLayout.RowDefinitions.Add( new System.Windows.Controls.RowDefinition{ Height = System.Windows.GridLength.Auto } );
+        gridLayout.RowDefinitions.Add(this.ReplaceRow);
+
+        gridLayout.ColumnDefinitions.Add( new System.Windows.Controls.ColumnDefinition{ Width = new System.Windows.GridLength(20D) } );
+        gridLayout.ColumnDefinitions.Add( new System.Windows.Controls.ColumnDefinition{ Width = new System.Windows.GridLength(150D) } );
+        gridLayout.ColumnDefinitions.Add( new System.Windows.Controls.ColumnDefinition{ Width = System.Windows.GridLength.Auto } );
+        gridLayout.ColumnDefinitions.Add( new System.Windows.Controls.ColumnDefinition{ Width = new System.Windows.GridLength(20D) } );
+        gridLayout.ColumnDefinitions.Add( new System.Windows.Controls.ColumnDefinition{ Width = new System.Windows.GridLength(20D) } );
+
+        var titleBar = this.BuildTitleBar();
+        System.Windows.Controls.Grid.SetRow(titleBar, 0);
+        System.Windows.Controls.Grid.SetColumn(titleBar, 0);
+        System.Windows.Controls.Grid.SetColumnSpan(titleBar, 6);
+        gridLayout.Children.Add(titleBar);
+
+        var closeButton = this.BuildCloseButton();
+        System.Windows.Shell.WindowChrome.SetIsHitTestVisibleInChrome(closeButton, true);
+        System.Windows.Controls.Grid.SetRow(closeButton, 0);
+        System.Windows.Controls.Grid.SetColumn(closeButton, 4);
+        gridLayout.Children.Add(closeButton);
+
+        this.ToggleButton = this.BuildToggleButton();
+        System.Windows.Controls.Grid.SetRow(this.ToggleButton, 1);
+        System.Windows.Controls.Grid.SetRowSpan(this.ToggleButton, 2);
+        System.Windows.Controls.Grid.SetColumn(this.ToggleButton, 0);
+        gridLayout.Children.Add(this.ToggleButton);
+
+        this.FindInput = this.BuildFindInputBox();
+        System.Windows.Controls.Grid.SetRow(this.FindInput, 1);
+        System.Windows.Controls.Grid.SetColumn(this.FindInput, 1);
+        gridLayout.Children.Add(this.FindInput);
+
+        this.IgnoreCaseCheckBox = this.BuildIgnoreCaseCheckBox();
+        System.Windows.Controls.Grid.SetRow(this.IgnoreCaseCheckBox, 1);
+        System.Windows.Controls.Grid.SetColumn(this.IgnoreCaseCheckBox, 2);
+        gridLayout.Children.Add(this.IgnoreCaseCheckBox);
+
+        var findPreviousButton = this.BuildFindPreviousButton();
+        System.Windows.Controls.Grid.SetRow(findPreviousButton, 1);
+        System.Windows.Controls.Grid.SetColumn(findPreviousButton, 3);
+        gridLayout.Children.Add(findPreviousButton);
+
+        var findNextButton = this.BuildFindNextButton();
+        System.Windows.Controls.Grid.SetRow(findNextButton, 1);
+        System.Windows.Controls.Grid.SetColumn(findNextButton, 4);
+        gridLayout.Children.Add(findNextButton);
+
+        this.ReplaceInput = this.BuildReplaceInputBox();
+        System.Windows.Controls.Grid.SetRow(this.ReplaceInput, 2);
+        System.Windows.Controls.Grid.SetColumn(this.ReplaceInput, 1);
+        gridLayout.Children.Add(this.ReplaceInput);
+
+        this.ReplaceButton = this.BuildReplaceButton();
+        System.Windows.Controls.Grid.SetRow(this.ReplaceButton, 2);
+        System.Windows.Controls.Grid.SetColumn(this.ReplaceButton, 3);
+        gridLayout.Children.Add(this.ReplaceButton);
+
+        this.ReplaceAllButton = this.BuildReplaceAllButton();
+        System.Windows.Controls.Grid.SetRow(this.ReplaceAllButton, 2);
+        System.Windows.Controls.Grid.SetColumn(this.ReplaceAllButton, 4);
+        gridLayout.Children.Add(this.ReplaceAllButton);
+
+        return gridLayout;
+    }
+    private System.Windows.Controls.DockPanel BuildTitleBar()
+    {
+        return new System.Windows.Controls.DockPanel
+        {
+            Height = 20D
+        };
+    }
+    private System.Windows.Controls.Button BuildCloseButton()
+    {
+        var closeButton = new System.Windows.Controls.Button
+        {
+            Content = "✕",
+            Background = System.Windows.Media.Brushes.White,
+            BorderThickness = new System.Windows.Thickness(0D),
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Close (Esc)" }
+        };
+        closeButton.Click += (object sender, System.Windows.RoutedEventArgs evt) =>
+        {
+            this.Close();
+        };
+        return closeButton;
+    }
+    private System.Windows.Controls.Primitives.ToggleButton BuildToggleButton()
+    {
+        var toggleButton = new System.Windows.Controls.Primitives.ToggleButton
+        {
+            Background = System.Windows.Media.Brushes.White,
+            BorderThickness = new System.Windows.Thickness(0D)
+        };
+        toggleButton.Click += (object sender, System.Windows.RoutedEventArgs evt) =>
+        {
+            this.ChangeReplacementAreaVisibility( ((System.Windows.Controls.Primitives.ToggleButton) sender).IsChecked == true );
+        };
+        return toggleButton;
+    }
+    private TextEditor.Controls.TextBox BuildFindInputBox()
+    {
+        return new TextEditor.Controls.TextBox
+        {
+            AcceptsReturn = true,
+            Margin = new System.Windows.Thickness(0D, 0D, 2D, 0D),
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find What" }
+        };
+    }
+    private System.Windows.Controls.CheckBox BuildIgnoreCaseCheckBox()
+    {
+        return new System.Windows.Controls.CheckBox
+        {
+            IsChecked = true,
+            Content = "Ignore Case",
+            VerticalAlignment = System.Windows.VerticalAlignment.Center,
+            Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
+        };
+    }
+    private System.Windows.Controls.Button BuildFindPreviousButton()
+    {
+        return new System.Windows.Controls.Button
+        {
+            Content = "↑",
+            Command = TextEditor.SearchCommands.FindPrevious,
+            CommandTarget = this,
+            Margin = new System.Windows.Thickness(2D, 0D, 0D, 0D),
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find Previous (Ctrl+Up)" }
+        };
+    }
+    private System.Windows.Controls.Button BuildFindNextButton()
+    {
+        return new System.Windows.Controls.Button
+        {
+            Content = "↓",
+            Command = TextEditor.SearchCommands.FindNext,
+            CommandTarget = this,
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find Next (Ctrl+Down)" }
+        };
+    }
+    private TextEditor.Controls.TextBox BuildReplaceInputBox()
+    {
+        return new TextEditor.Controls.TextBox
+        {
+            AcceptsReturn = true,
+            Margin = new System.Windows.Thickness(0D, 0D, 2D, 0D),
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace As" }
+        };
+    }
+    private System.Windows.Controls.Button BuildReplaceButton()
+    {
+        return new System.Windows.Controls.Button
+        {
+            Content = "↓",
+            Command = TextEditor.ReplacementCommands.Replace,
+            CommandTarget = this,
+            Margin = new System.Windows.Thickness(2D, 0D, 0D, 0D),
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace (Ctrl+Enter)" }
+        };
+    }
+    private System.Windows.Controls.Button BuildReplaceAllButton()
+    {
+        return new System.Windows.Controls.Button
+        {
+            Content = "⇊",
+            Command = TextEditor.ReplacementCommands.ReplaceAll,
+            CommandTarget = this,
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace All (Ctrl+Shift+Enter)" }
+        };
     }
 }

@@ -1,50 +1,37 @@
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+namespace TextEditor.Windows;
 
-namespace TextEditor;
-
-public class EditorWindow : Window
+public class EditorWindow : System.Windows.Window
 {
+    /*******
+     构造函数
+     *******/
     public EditorWindow()
     {
         this.Title = "文本编辑器";
         this.Width = 600D;
         this.Height = 650D;
-        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
         this.Content = this.BuildGridLayout();
-        this.TabControl.Focus();
     }
-    static EditorWindow(
-    ){
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.FileCommands.Open,    Open_Execute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Find,    OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    FindReplace_CanExecute));
-        CommandManager.RegisterClassCommandBinding(typeof(EditorWindow), new CommandBinding(TextEditor.EditCommands.Replace, OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), FindReplace_CanExecute));
+    static EditorWindow()
+    {
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Open,    TextEditor.Windows.EditorWindow.Open_Execute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Find,    TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Replace, TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
     }
+
+    /*********************
+     数据对象（字段 (Fields)）
+     *********************/
     public TextEditor.Controls.TabControl TabControl = null!;
-    private FindReplaceWindow? FindReplaceWindow = null;
-    private Grid BuildGridLayout()
+    private TextEditor.Windows.FindReplaceWindow? FindReplaceWindow = null;
+
+    /*******
+     类级函数
+     *******/
+    private static void Open_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        var gridLayout = new Grid();
-        gridLayout.RowDefinitions.Add(new RowDefinition{ Height = GridLength.Auto });
-        gridLayout.RowDefinitions.Add(new RowDefinition{ Height = new GridLength(1D, GridUnitType.Star) });
-
-        var tabControl = new TextEditor.Controls.TabControl();
-        this.TabControl = tabControl;
-        Grid.SetRow(tabControl, 1);
-        Grid.SetColumn(tabControl, 0);
-        gridLayout.Children.Add(tabControl);
-
-        var topMenu = new TextEditor.Controls.MainMenu(tabControl);
-        Grid.SetRow(topMenu, 0);
-        Grid.SetColumn(topMenu, 0);
-        gridLayout.Children.Add(topMenu);
-
-        return gridLayout;
-    }
-    private static void Open_Execute(object sender, ExecutedRoutedEventArgs evt)
-    {
-        if (sender is EditorWindow editorWindow)
+        if (sender is TextEditor.Windows.EditorWindow editorWindow)
         {
             var tabControl= editorWindow.TabControl;
             var dialog = new Microsoft.Win32.OpenFileDialog
@@ -58,10 +45,10 @@ public class EditorWindow : Window
     }
     private static System.Windows.Input.ExecutedRoutedEventHandler OpenFindReplaceWindowCallback(TextEditor.SearchMode mode)
     {
-        return (object sender, ExecutedRoutedEventArgs evt) =>
+        return (object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) =>
         {
-            var editor = (EditorWindow) sender;
-            var window = new FindReplaceWindow(editor.TabControl, mode){ Owner = editor };
+            var editor = (TextEditor.Windows.EditorWindow) sender;
+            var window = new TextEditor.Windows.FindReplaceWindow(editor.TabControl, mode){ Owner = editor };
             editor.FindReplaceWindow = window;
             window.Closed += (object? sender, EventArgs evt) =>
             {
@@ -70,11 +57,41 @@ public class EditorWindow : Window
             window.Show();
         };
     }
-    private static void FindReplace_CanExecute(object sender, CanExecuteRoutedEventArgs evt)
+    private static void FindReplace_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
-        if (sender is EditorWindow editor
+        if (sender is TextEditor.Windows.EditorWindow editor
          && editor.TabControl.SelectedItem != null
          && editor.FindReplaceWindow == null)
            evt.CanExecute = true;
+    }
+
+    /*******
+     方法函数
+     *******/
+    private System.Windows.Controls.Grid BuildGridLayout()
+    {
+        var gridLayout = new System.Windows.Controls.Grid();
+        gridLayout.RowDefinitions.Add(new System.Windows.Controls.RowDefinition{ Height = System.Windows.GridLength.Auto });
+        gridLayout.RowDefinitions.Add(new System.Windows.Controls.RowDefinition{ Height = new System.Windows.GridLength(1D, System.Windows.GridUnitType.Star) });
+
+        this.TabControl = this.BuildTabControl();
+        System.Windows.Controls.Grid.SetRow(this.TabControl, 1);
+        System.Windows.Controls.Grid.SetColumn(this.TabControl, 0);
+        gridLayout.Children.Add(this.TabControl);
+
+        var mainMenu = this.BuildMainMenu();
+        System.Windows.Controls.Grid.SetRow(mainMenu, 0);
+        System.Windows.Controls.Grid.SetColumn(mainMenu, 0);
+        gridLayout.Children.Add(mainMenu);
+
+        return gridLayout;
+    }
+    private TextEditor.Controls.TabControl BuildTabControl()
+    {
+        return new TextEditor.Controls.TabControl();
+    }
+    private TextEditor.Controls.MainMenu BuildMainMenu()
+    {
+        return new TextEditor.Controls.MainMenu(this.TabControl);
     }
 }
