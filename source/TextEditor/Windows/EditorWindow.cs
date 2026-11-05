@@ -66,7 +66,7 @@ public class EditorWindow : System.Windows.Window
     }
 
     /*******
-     方法函数
+     实例函数
      *******/
     private System.Windows.Controls.Grid BuildGridLayout()
     {

@@ -2,84 +2,35 @@ namespace TextEditor.Controls;
 
 public class TextBox : System.Windows.Controls.TextBox
 {
-    public int IndentWidth = 4;
+    /*******
+     构造函数
+     *******/
     public TextBox()
     {
-        this.ContextMenu = null;
         this.BindingCommands();
     }
-    private void BindingCommands()
-    {
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Undo,  Undo_Execute,  Undo_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Redo,  Redo_Execute,  Redo_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Cut,   Cut_Execute,   HasSelection_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Copy,  Copy_Execute,  HasSelection_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Paste, Paste_Execute, Paste_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Upper,        Upper_Execute,         HasSelection_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Lower,        Lower_Execute,         HasSelection_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Indent,       Indent_Execute,        Focused_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Dedent,       Dedent_Execute,        Focused_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.IndentRegion, IndentRegion_Execute,  Focused_CanExecute));
-        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.DedentRegion, DedentRegion_Execute,  Focused_CanExecute));
-    }
-    public int SelectionEnd { get =>  this.SelectionStart + this.SelectionLength; }
-    protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs evt)
-    {
-        // 按键 Tab 自带内置行为，并且会令绑定了它的命令的快捷键失效，
-        // 即使对 evt.Key 等于 Key.Tab 的 PreviewKeyDown 事件进行阻塞。
-        // 因此，此处为绑定的命令进行了补发，硬编码的触发条件仅用作过渡：
-        if (evt.Key == System.Windows.Input.Key.Tab)
-        {
-            evt.Handled = true;
-            var textBox = (System.Windows.Controls.TextBox) evt.Source;
-            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0
-             && TextEditor.FormatCommands.Dedent.CanExecute(null, textBox))
-                TextEditor.FormatCommands.Dedent.Execute(null, textBox);
-            else if (TextEditor.FormatCommands.Indent.CanExecute(null, textBox))
-                TextEditor.FormatCommands.Indent.Execute(null, textBox);
-        }
-        base.OnPreviewKeyDown(evt);
-    }
-    public void Write(string content)
-    {
-        this.SelectedText = content;
-    }
-    public void Remove(int startIndex, int length)
-    {
-        this.BeginChange();
-        this.Select(startIndex, length);
-        this.SelectedText = "";
-        this.EndChange();
-    }
-    public (int, int) GetCoordinatesFromCharacterIndex(int characterIndex)
-    {
-        var row = this.GetLineIndexFromCharacterIndex(characterIndex);
-        var rowStart = this.GetCharacterIndexFromLineIndex(row);
-        return (row, characterIndex - rowStart);
-    }
-    public (int, int) GetSelectionLineRange()
-    {
-        var start = this.GetLineIndexFromCharacterIndex(this.SelectionStart);
-        var end = this.GetLineIndexFromCharacterIndex(this.SelectionEnd);
 
-        // 换行符会被归入下一行，因此还需要进行修正：
-        if (this.SelectedText.EndsWith('\r') || this.SelectedText.EndsWith('\n'))
-            end--;
+    /*********************
+     数据对象（字段 (Fields)）
+     *********************/
+    public Int32 IndentWidth = 4;
 
-        return (start, end);
-    }
-    public void CaretMoveToDocumentEnd()
-    {
-        this.Select(this.Text.Length, 0);
-    }
-    public void CaretMoveToCharacterIndex(int characterIndex)
-    {
-        this.Select(characterIndex, 0);
-    }
-    public void CaretMoveToLineIndex(int lineIndex)
-    {
-        this.Select(this.GetCharacterIndexFromLineIndex(lineIndex), 0);
-    }
+    /*****************
+     属性 (Properties)
+     *****************/
+    public Int32 SelectionEnd => this.SelectionStart + this.SelectionLength;
+
+    /*******
+     类级函数
+     *******/
+    private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
+        => ((TextEditor.Controls.TextBox) sender).Indent();
+    private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
+        => ((TextEditor.Controls.TextBox) sender).Dedent();
+    private static void IndentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
+        => ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Forward);
+    private static void DedentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
+        => ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Backward);
     private static void Focused_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
         if (sender is System.Windows.Controls.TextBox)
@@ -141,14 +92,77 @@ public class TextBox : System.Windows.Controls.TextBox
         var textBox = (System.Windows.Controls.TextBox) sender;
         textBox.SelectedText = textBox.SelectedText.ToLower();
     }
-    private int CalculateInsertSpaceCount(int currentWidth)
+
+    /*******
+     实例函数
+     *******/
+    protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs evt)
     {
-        return this.IndentWidth - (currentWidth % this.IndentWidth);
+        // 按键 Tab 自带内置行为，并且会令绑定了它的命令的快捷键失效，
+        // 即使对 evt.Key 等于 Key.Tab 的 PreviewKeyDown 事件进行阻塞。
+        // 因此，此处为绑定的命令进行了补发，硬编码的触发条件仅用作过渡：
+        if (evt.Key == System.Windows.Input.Key.Tab)
+        {
+            evt.Handled = true;
+            var textBox = (System.Windows.Controls.TextBox) evt.Source;
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0
+             && TextEditor.FormatCommands.Dedent.CanExecute(null, textBox))
+                TextEditor.FormatCommands.Dedent.Execute(null, textBox);
+            else if (TextEditor.FormatCommands.Indent.CanExecute(null, textBox))
+                TextEditor.FormatCommands.Indent.Execute(null, textBox);
+        }
+        base.OnPreviewKeyDown(evt);
     }
-    private int CalculateRemoveSpaceCount(int currentWidth)
+    private void BindingCommands()
     {
-        return (((currentWidth % this.IndentWidth) + this.IndentWidth - 1) % this.IndentWidth) + 1;
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Undo,  Undo_Execute,  Undo_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Redo,  Redo_Execute,  Redo_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Cut,   Cut_Execute,   HasSelection_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Copy,  Copy_Execute,  HasSelection_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Paste, Paste_Execute, Paste_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Upper,        Upper_Execute,         HasSelection_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Lower,        Lower_Execute,         HasSelection_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Indent,       Indent_Execute,        Focused_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.Dedent,       Dedent_Execute,        Focused_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.IndentRegion, IndentRegion_Execute,  Focused_CanExecute));
+        this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.DedentRegion, DedentRegion_Execute,  Focused_CanExecute));
     }
+    private Int32 CalculateInsertSpaceCount(Int32 currentWidth)
+        => this.IndentWidth - (currentWidth % this.IndentWidth);
+    private Int32 CalculateRemoveSpaceCount(Int32 currentWidth)
+        => (((currentWidth % this.IndentWidth) + this.IndentWidth - 1) % this.IndentWidth) + 1;
+    public void Write(String content)
+        => this.SelectedText = content;
+    public void Remove(Int32 startIndex, Int32 length)
+    {
+        this.BeginChange();
+        this.Select(startIndex, length);
+        this.SelectedText = "";
+        this.EndChange();
+    }
+    public (Int32, Int32) GetCoordinatesFromCharacterIndex(Int32 characterIndex)
+    {
+        var row = this.GetLineIndexFromCharacterIndex(characterIndex);
+        var rowStart = this.GetCharacterIndexFromLineIndex(row);
+        return (row, characterIndex - rowStart);
+    }
+    public (Int32, Int32) GetSelectionLineRange()
+    {
+        var start = this.GetLineIndexFromCharacterIndex(this.SelectionStart);
+        var end = this.GetLineIndexFromCharacterIndex(this.SelectionEnd);
+
+        // 换行符会被归入下一行，因此还需要进行修正：
+        if (this.SelectedText.EndsWith('\r') || this.SelectedText.EndsWith('\n'))
+            end--;
+
+        return (start, end);
+    }
+    public void CaretMoveToDocumentEnd()
+        => this.Select(this.Text.Length, 0);
+    public void CaretMoveToCharacterIndex(Int32 characterIndex)
+        => this.Select(characterIndex, 0);
+    public void CaretMoveToLineIndex(Int32 lineIndex)
+        => this.Select(this.GetCharacterIndexFromLineIndex(lineIndex), 0);
     public void Indent()
     {
         var (row, column) = this.GetCoordinatesFromCharacterIndex(this.CaretIndex);
@@ -171,31 +185,43 @@ public class TextBox : System.Windows.Controls.TextBox
         var removeSpaceCount = this.CalculateRemoveSpaceCount(trailingSpaceCount);
         this.Remove(caretIndex - removeSpaceCount, removeSpaceCount);
     }
-    public void IndentRegion()
-    // 为选区内所有行首添加缩进。
-    // 对于空行，仅当选区内仅有空行时才生效。
+    public void IndentRegion(TextEditor.Direction direction)
     {
-        bool? hasNonEmptyLine = null;
         var (selectionFirstLine, selectionFinalLine) = this.GetSelectionLineRange();
         var lineCount = selectionFinalLine - selectionFirstLine + 1;
         var lines = new List<String>(lineCount);
-        for (int row = selectionFirstLine;  row <= selectionFinalLine;  row++)
+        if (direction == TextEditor.Direction.Forward)
         {
-            var lineText = this.GetLineText(row);
-            lines.Add(lineText);
-            if (hasNonEmptyLine is null && lineText != Environment.NewLine)
-                hasNonEmptyLine = true;
-        }
-        var indent = new String(' ', this.IndentWidth);
-        for (int index = 0;  index < lineCount;  index++)
-        {
-            var lineText = lines[index];
-            if (hasNonEmptyLine == true)
+            bool? hasNonEmptyLine = null;
+            for (Int32 row = selectionFirstLine;  row <= selectionFinalLine;  row++)
             {
-                var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
-                lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
+                var lineText = this.GetLineText(row);
+                lines.Add(lineText);
+                if (hasNonEmptyLine is null && lineText != Environment.NewLine)
+                    hasNonEmptyLine = true;
             }
-            else lines[index] = lineText.Insert(0, indent);
+            var indent = new String(' ', this.IndentWidth);
+            for (Int32 index = 0;  index < lineCount;  index++)
+            {
+                var lineText = lines[index];
+                if (hasNonEmptyLine == true)
+                {
+                    var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
+                    lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
+                }
+                else lines[index] = lineText.Insert(0, indent);
+            }
+        }
+        else
+        {
+            for (Int32 row = selectionFirstLine;  row <= selectionFinalLine;  row++)
+            {
+                var lineText = this.GetLineText(row);
+                var leadingSpaceCount = lineText.CountLeadingSpaces();
+                if (leadingSpaceCount != 0)
+                    lineText = lineText.Remove(0, this.CalculateRemoveSpaceCount(leadingSpaceCount));
+                lines.Add(lineText);
+            }
         }
         var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);
         var selectionEnd = this.GetCharacterIndexFromLineIndex(selectionFinalLine);
@@ -205,28 +231,4 @@ public class TextBox : System.Windows.Controls.TextBox
         this.SelectedText = String.Concat(lines);
         this.EndChange();
     }
-    public void DedentRegion()
-    {
-        var newLines = new System.Text.StringBuilder();
-        var (selectionFirstLine, selectionFinalLine) = this.GetSelectionLineRange();
-        for (int row = selectionFirstLine;  row <= selectionFinalLine;  row++)
-        {
-            var lineText = this.GetLineText(row);
-            var leadingSpaceCount = lineText.CountLeadingSpaces();
-            if (leadingSpaceCount != 0)
-                lineText = lineText.Remove(0, this.CalculateRemoveSpaceCount(leadingSpaceCount));
-            newLines.Append(lineText);
-        }
-        var selectionStart = this.GetCharacterIndexFromLineIndex(selectionFirstLine);
-        var selectionEnd = this.GetCharacterIndexFromLineIndex(selectionFinalLine);
-        var endLineLength = this.GetLineText(selectionFinalLine).Length;
-        this.BeginChange();
-        this.Select(selectionStart,  selectionEnd + endLineLength - selectionStart);
-        this.SelectedText = newLines.ToString();
-        this.EndChange();
-    }
-    private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).Indent(); }
-    private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).Dedent(); }
-    private static void IndentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).IndentRegion(); }
-    private static void DedentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt) { ( (TextEditor.Controls.TextBox)sender ).DedentRegion(); }
 }

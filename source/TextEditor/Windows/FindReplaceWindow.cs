@@ -60,7 +60,7 @@ public class FindReplaceWindow : System.Windows.Window
     private System.Windows.Controls.Primitives.ToggleButton ToggleButton = null!;
     private System.Windows.Controls.Button ReplaceButton = null!;
     private System.Windows.Controls.Button ReplaceAllButton = null!;
-    public TextEditor.SearchDirection LastSearchDirection = TextEditor.SearchDirection.Forward;
+    public TextEditor.Direction LastSearchDirection = TextEditor.Direction.Forward;
 
     /*******
      类级函数
@@ -68,7 +68,7 @@ public class FindReplaceWindow : System.Windows.Window
     private static void FindPrevious_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        if (!window.TrySearch(TextEditor.SearchDirection.Backward))
+        if (!window.TrySearch(TextEditor.Direction.Backward))
         {
             System.Windows.MessageBox.Show(window, "Text not found.");
             return;
@@ -87,7 +87,7 @@ public class FindReplaceWindow : System.Windows.Window
     private static void FindNext_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        if (!window.TrySearch(TextEditor.SearchDirection.Forward))
+        if (!window.TrySearch(TextEditor.Direction.Forward))
         {
             System.Windows.MessageBox.Show(window, "Text not found.");
             return;
@@ -130,7 +130,7 @@ public class FindReplaceWindow : System.Windows.Window
     }
 
     /*******
-     方法函数
+     实例函数
      *******/
     private void ChangeReplacementAreaVisibility(Boolean value)
     {
@@ -342,7 +342,7 @@ public class FindReplaceWindow : System.Windows.Window
             ToolTip = new System.Windows.Controls.ToolTip{ Content = "替换全部 (Ctrl+Shift+Enter)" }
         };
     }
-    public Boolean TrySearch(TextEditor.SearchDirection direction)
+    public Boolean TrySearch(TextEditor.Direction direction)
     {
         String searchTarget;
         StringComparison stringComparison;
@@ -353,7 +353,7 @@ public class FindReplaceWindow : System.Windows.Window
         textBox = ((TextEditor.Controls.TabItem) this.TabControl.SelectedItem).TextBox;
         stringComparison = this.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
                                                                      : StringComparison.Ordinal;
-        if (direction == TextEditor.SearchDirection.Forward)
+        if (direction == TextEditor.Direction.Forward)
         {
             searchStart = textBox.SelectionEnd;
             resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);

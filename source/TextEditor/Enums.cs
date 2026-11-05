@@ -19,7 +19,7 @@ public enum SearchMode
     Replace,
 }
 
-public enum SearchDirection
+public enum Direction
 {
     Backward,
     Forward,

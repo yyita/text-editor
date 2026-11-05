@@ -27,7 +27,7 @@ public class Application : System.Windows.Application
     private static System.Threading.Mutex? Mutex;
 
     /*******
-     方法函数
+     实例函数
      *******/
     protected override void OnStartup(System.Windows.StartupEventArgs evt)
     {
