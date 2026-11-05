@@ -13,5 +13,4 @@ public class EditCommands
 
     public static readonly RoutedUICommand Find    = new RoutedUICommand("查找", "Find",    typeof(EditCommands), new InputGestureCollection{ new KeyGesture(Key.F, ModifierKeys.Control), });
     public static readonly RoutedUICommand Replace = new RoutedUICommand("替换", "Replace", typeof(EditCommands), new InputGestureCollection{ new KeyGesture(Key.R, ModifierKeys.Control), });
-    public static readonly RoutedUICommand Modify  = new RoutedUICommand("修改", "Modify",  typeof(EditCommands), new InputGestureCollection{ new KeyGesture(Key.M, ModifierKeys.Control), });
 }
