@@ -206,6 +206,8 @@ public class TextBox : System.Windows.Controls.TextBox
                 var lineText = lines[index];
                 if (hasNonEmptyLine == true)
                 {
+                    if (lineText == Environment.NewLine)
+                        continue;
                     var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
                     lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
                 }
