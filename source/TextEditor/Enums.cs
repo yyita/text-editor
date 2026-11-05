@@ -7,14 +7,20 @@ public enum TextMode
     ReadOnly,
 }
 
+public enum IndentCategory
+{
+    Space,
+    Tab,
+}
+
 public enum SearchMode
 {
     Find,
     Replace,
 }
 
-public enum IndentCategory
+public enum SearchDirection
 {
-    Space,
-    Tab,
+    Backward,
+    Forward,
 }

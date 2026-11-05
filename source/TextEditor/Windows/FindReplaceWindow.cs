@@ -60,6 +60,7 @@ public class FindReplaceWindow : System.Windows.Window
     private System.Windows.Controls.Primitives.ToggleButton ToggleButton = null!;
     private System.Windows.Controls.Button ReplaceButton = null!;
     private System.Windows.Controls.Button ReplaceAllButton = null!;
+    public TextEditor.SearchDirection LastSearchDirection = TextEditor.SearchDirection.Forward;
 
     /*******
      类级函数
@@ -67,21 +68,11 @@ public class FindReplaceWindow : System.Windows.Window
     private static void FindPrevious_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        var searchTarget = window.FindInput.Text;
-        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
-        var searchStart = textBox.SelectionStart - 1;
-        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
-                                                                           : StringComparison.Ordinal;
-        var resultFirst = textBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
-
-        if (resultFirst == -1)
+        if (!window.TrySearch(TextEditor.SearchDirection.Backward))
         {
             System.Windows.MessageBox.Show(window, "Text not found.");
             return;
         }
-
-        textBox.Focus();
-        textBox.Select(resultFirst, searchTarget.Length);
     }
     private static void FindPrevious_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
@@ -96,21 +87,11 @@ public class FindReplaceWindow : System.Windows.Window
     private static void FindNext_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        var searchTarget = window.FindInput.Text;
-        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
-        var searchStart = textBox.SelectionEnd;
-        var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
-                                                                           : StringComparison.Ordinal;
-        var resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
-
-        if (resultFirst == -1)
+        if (!window.TrySearch(TextEditor.SearchDirection.Forward))
         {
             System.Windows.MessageBox.Show(window, "Text not found.");
             return;
         }
-
-        textBox.Focus();
-        textBox.Select(resultFirst, searchTarget.Length);
     }
     private static void FindNext_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
@@ -126,6 +107,7 @@ public class FindReplaceWindow : System.Windows.Window
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
         ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox.SelectedText = window.ReplaceInput.Text;
+        window.TrySearch(window.LastSearchDirection);
     }
     private static void ReplaceAll_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
@@ -359,5 +341,42 @@ public class FindReplaceWindow : System.Windows.Window
             CommandTarget = this,
             ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace All (Ctrl+Shift+Enter)" }
         };
+    }
+    public Boolean TrySearch(TextEditor.SearchDirection direction)
+    {
+        String searchTarget;
+        StringComparison stringComparison;
+        TextEditor.Controls.TextBox textBox;
+        Int32 searchStart, resultFirst;
+
+        searchTarget = this.FindInput.Text;
+        textBox = ((TextEditor.Controls.TabItem) this.TabControl.SelectedItem).TextBox;
+        stringComparison = this.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
+                                                                     : StringComparison.Ordinal;
+        if (direction == TextEditor.SearchDirection.Forward)
+        {
+            searchStart = textBox.SelectionEnd;
+            resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
+        }
+        else
+        {
+            searchStart = textBox.SelectionStart - 1;
+            resultFirst = textBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
+        }
+        try
+        {
+            if (resultFirst == -1)
+                return false;
+            else
+            {
+                textBox.Focus();
+                textBox.Select(resultFirst, searchTarget.Length);
+                return true;
+            }
+        }
+        finally
+        {
+            this.LastSearchDirection = direction;
+        }
     }
 }
