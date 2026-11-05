@@ -142,8 +142,7 @@ public class TabItem : System.Windows.Controls.TabItem
     {
         var textBox = this.TextBox;
         var (row, column) = textBox.GetCoordinatesFromCharacterIndex(textBox.CaretIndex);
-        this.StatusBar.Coordinates = (row,  textBox.LineCount,
-                                      column,  textBox.GetLineText(row).TrimEnd(Environment.NewLine).Length + 1);
+        this.StatusBar.Coordinates = (row,  textBox.LineCount, column,  textBox.CountColumn(row));
     }
     private void TextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs evt)
     {

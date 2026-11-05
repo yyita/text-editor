@@ -32,6 +32,8 @@ public class MainMenu : System.Windows.Controls.Menu
         menu.Items.Add(new System.Windows.Controls.Separator());
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Find,    CommandTarget = tabControl });
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Replace, CommandTarget = tabControl });
+        menu.Items.Add(new System.Windows.Controls.Separator());
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.EditCommands.Jump });
         return menu;
     }
     private System.Windows.Controls.MenuItem FormatMenu_Build()

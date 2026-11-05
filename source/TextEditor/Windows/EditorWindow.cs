@@ -8,6 +8,7 @@ public class EditorWindow : System.Windows.Window
         System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Open,    TextEditor.Windows.EditorWindow.Open_Execute));
         System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Find,    TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
         System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Replace, TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Jump, TextEditor.Windows.EditorWindow.Jump_Execute, TextEditor.Windows.EditorWindow.Jump_CanExecute));
     }
     public EditorWindow()
     {
@@ -54,6 +55,18 @@ public class EditorWindow : System.Windows.Window
         if (sender is TextEditor.Windows.EditorWindow editor
          && editor.TabControl.SelectedItem != null
          && editor.FindReplaceWindow == null)
+           evt.CanExecute = true;
+    }
+    private static void Jump_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
+    {
+        var editor = (TextEditor.Windows.EditorWindow) sender;
+        var tab = (TextEditor.Controls.TabItem) editor.TabControl.SelectedItem;
+        var window = new TextEditor.Windows.JumpWindow(tab.TextBox){ Owner = editor }.ShowDialog();
+    }
+    private static void Jump_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
+    {
+        if (sender is TextEditor.Windows.EditorWindow editor
+         && editor.TabControl.SelectedItem != null)
            evt.CanExecute = true;
     }
  // 实例函数
