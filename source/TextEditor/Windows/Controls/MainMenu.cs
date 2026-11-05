@@ -2,12 +2,14 @@ namespace TextEditor.Controls;
 
 public class MainMenu : System.Windows.Controls.Menu
 {
+ // 构造函数
     public MainMenu(TextEditor.Controls.TabControl tabControl)
     {
         this.Items.Add(this.FileMenu_Build(tabControl));
         this.Items.Add(this.EditMenu_Build(tabControl));
         this.Items.Add(this.FormatMenu_Build());
     }
+ // 实例函数
     private System.Windows.Controls.MenuItem FileMenu_Build( TextEditor.Controls.TabControl tabControl )
     {
         var menu = new System.Windows.Controls.MenuItem{ Header = "文件" };

@@ -2,27 +2,16 @@ namespace TextEditor.Controls;
 
 public class TextBox : System.Windows.Controls.TextBox
 {
-    /*******
-     构造函数
-     *******/
+ // 构造函数
     public TextBox()
     {
         this.BindingCommands();
     }
-
-    /*********************
-     数据对象（字段 (Fields)）
-     *********************/
+ // 数据槽
     public Int32 IndentWidth = 4;
-
-    /*****************
-     属性 (Properties)
-     *****************/
+ // 访问器
     public Int32 SelectionEnd => this.SelectionStart + this.SelectionLength;
-
-    /*******
-     类级函数
-     *******/
+ // 类级函数
     private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
         => ((TextEditor.Controls.TextBox) sender).Indent();
     private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
@@ -92,10 +81,7 @@ public class TextBox : System.Windows.Controls.TextBox
         var textBox = (System.Windows.Controls.TextBox) sender;
         textBox.SelectedText = textBox.SelectedText.ToLower();
     }
-
-    /*******
-     实例函数
-     *******/
+ // 实例函数
     protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs evt)
     {
         // 按键 Tab 自带内置行为，并且会令绑定了它的命令的快捷键失效，

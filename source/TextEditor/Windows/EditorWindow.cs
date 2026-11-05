@@ -2,9 +2,13 @@ namespace TextEditor.Windows;
 
 public class EditorWindow : System.Windows.Window
 {
-    /*******
-     构造函数
-     *******/
+ // 构造函数
+    static EditorWindow()
+    {
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Open,    TextEditor.Windows.EditorWindow.Open_Execute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Find,    TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Replace, TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
+    }
     public EditorWindow()
     {
         this.Title = "文本编辑器";
@@ -13,22 +17,10 @@ public class EditorWindow : System.Windows.Window
         this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
         this.Content = this.BuildGridLayout();
     }
-    static EditorWindow()
-    {
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.FileCommands.Open,    TextEditor.Windows.EditorWindow.Open_Execute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Find,    TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Find),    TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.EditorWindow), new System.Windows.Input.CommandBinding(TextEditor.EditCommands.Replace, TextEditor.Windows.EditorWindow.OpenFindReplaceWindowCallback(TextEditor.SearchMode.Replace), TextEditor.Windows.EditorWindow.FindReplace_CanExecute));
-    }
-
-    /*********************
-     数据对象（字段 (Fields)）
-     *********************/
+ // 数据槽
     public TextEditor.Controls.TabControl TabControl = null!;
     private TextEditor.Windows.FindReplaceWindow? FindReplaceWindow = null;
-
-    /*******
-     类级函数
-     *******/
+ // 类级函数
     private static void Open_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         if (sender is TextEditor.Windows.EditorWindow editorWindow)
@@ -64,10 +56,7 @@ public class EditorWindow : System.Windows.Window
          && editor.FindReplaceWindow == null)
            evt.CanExecute = true;
     }
-
-    /*******
-     实例函数
-     *******/
+ // 实例函数
     private System.Windows.Controls.Grid BuildGridLayout()
     {
         var gridLayout = new System.Windows.Controls.Grid();

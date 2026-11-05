@@ -2,63 +2,7 @@ namespace TextEditor.Controls;
 
 public class StatusBar : System.Windows.Controls.Primitives.StatusBar
 {
-    private System.Windows.Controls.TextBlock? Coordinates_TextBlock;
-    private System.Windows.Controls.TextBlock? TextMode_TextBlock;
-    private System.Windows.Controls.TextBlock? LineBreak_TextBlock;
-    private System.Windows.Controls.TextBlock? Coding_TextBlock;
-
-    private static (int, int, int, int) DefaultCoordinates = (0, 1, 0, 1);
-    public (int, int, int, int) Coordinates
-    {
-        get;
-        set
-        {
-            var (row, rowCount, column, columnCount) = value;
-            this.Coordinates_TextBlock!.Text = $"第 {row + 1} 行，共 {rowCount} 行；第 {column + 1} 列，共 {columnCount} 列";
-            field = value;
-        }
-    } = DefaultCoordinates;
-
-    public TextEditor.TextMode TextMode
-    {
-        get;
-        set
-        {
-            string displayText;
-            if     ( value == TextEditor.TextMode.Insert )   { displayText = "插入"; }
-            else if( value == TextEditor.TextMode.Overwrite ){ displayText = "覆写"; }
-            else                                             { displayText = "只读"; }
-            this.TextMode_TextBlock!.Text = displayText;
-            field = value;
-        }
-    } = TextEditor.TextMode.Insert;
-
-    private static string DefaultLineBreak = Environment.NewLine;
-    public string LineBreak
-    {
-        get;
-        set
-        {
-            string displayText;
-            if     ( value == "\r\n" ){ displayText = "CRLF"; }
-            else if( value == "\n"   ){ displayText = "LF"; }
-            else{ throw new ArgumentException( "Only accept '\r\n' and '\n'." ); }
-            this.LineBreak_TextBlock!.Text = displayText;
-            field = value;
-        }
-    } = DefaultLineBreak;
-
-    private static System.Text.Encoding DefaultCoding = new System.Text.UTF8Encoding();
-    public System.Text.Encoding Coding
-    {
-        get;
-        set
-        {
-            this.Coding_TextBlock!.Text = value.EncodingName;
-            field = value;
-        }
-    } = DefaultCoding;
-
+ // 构造函数
     public StatusBar()
     {
         this.Items.Add( AreaBuild_Coordinates() );
@@ -72,6 +16,61 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
         this.LineBreak = TextEditor.Controls.StatusBar.DefaultLineBreak;
         this.Coding = TextEditor.Controls.StatusBar.DefaultCoding;
     }
+ // 数据槽
+    private static (Int32, Int32, Int32, Int32) DefaultCoordinates = (0, 1, 0, 1);
+    private static String DefaultLineBreak = Environment.NewLine;
+    private static System.Text.Encoding DefaultCoding = new System.Text.UTF8Encoding();
+    private System.Windows.Controls.TextBlock? Coordinates_TextBlock;
+    private System.Windows.Controls.TextBlock? TextMode_TextBlock;
+    private System.Windows.Controls.TextBlock? LineBreak_TextBlock;
+    private System.Windows.Controls.TextBlock? Coding_TextBlock;
+ // 访问器
+    public (Int32, Int32, Int32, Int32) Coordinates
+    {
+        get;
+        set
+        {
+            var (row, rowCount, column, columnCount) = value;
+            this.Coordinates_TextBlock!.Text = $"第 {row + 1} 行，共 {rowCount} 行；第 {column + 1} 列，共 {columnCount} 列";
+            field = value;
+        }
+    } = DefaultCoordinates;
+    public TextEditor.TextMode TextMode
+    {
+        get;
+        set
+        {
+            string displayText;
+            if     ( value == TextEditor.TextMode.Insert )   { displayText = "插入"; }
+            else if( value == TextEditor.TextMode.Overwrite ){ displayText = "覆写"; }
+            else                                             { displayText = "只读"; }
+            this.TextMode_TextBlock!.Text = displayText;
+            field = value;
+        }
+    } = TextEditor.TextMode.Insert;
+    public string LineBreak
+    {
+        get;
+        set
+        {
+            string displayText;
+            if     ( value == "\r\n" ){ displayText = "CRLF"; }
+            else if( value == "\n"   ){ displayText = "LF"; }
+            else{ throw new ArgumentException( "Only accept '\r\n' and '\n'." ); }
+            this.LineBreak_TextBlock!.Text = displayText;
+            field = value;
+        }
+    } = DefaultLineBreak;
+    public System.Text.Encoding Coding
+    {
+        get;
+        set
+        {
+            this.Coding_TextBlock!.Text = value.EncodingName;
+            field = value;
+        }
+    } = DefaultCoding;
+ // 实例函数
     private System.Windows.Controls.Separator Build_RightSeparator()
     {
         var separator = new System.Windows.Controls.Separator

@@ -2,40 +2,26 @@ namespace TextEditor.Windows;
 
 public class Application : System.Windows.Application
 {
-    /*******
-     程序入口
-     *******/
+ // 程序入口
     [STAThread]
     static void Main()
     {
         (new TextEditor.Windows.Application()).Run();
     }
-
-    /*******
-     构造函数
-     *******/
+ // 构造函数
     public Application()
     {
         this.ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose;
     }
-
-    /*********************
-     数据对象（字段 (Fields)）
-     *********************/
+ // 数据槽
     private const String GUID = "AA29FA7E-E4F1-49E0-9F54-83B3B777B442";
     private const String MutexName = $"Local\\Yyita.TextEditor.{{{GUID}}}";
     private static System.Threading.Mutex? Mutex;
-
-    /*******
-     实例函数
-     *******/
+ // 实例函数
     protected override void OnStartup(System.Windows.StartupEventArgs evt)
     {
         base.OnStartup(evt);
-
-        /*******
-         单例应用
-         *******/
+     // 单例应用
         TextEditor.Windows.Application.Mutex = new System.Threading.Mutex(true, TextEditor.Windows.Application.MutexName, out bool noInstance);
         if (!noInstance)
         {
@@ -43,10 +29,7 @@ public class Application : System.Windows.Application
             this.Shutdown();
             return;
         }
-
-        /***************
-         “当前工作目录”补丁
-         ***************/
+     // “当前工作目录”补丁
         var oldWorkingDirectory = Environment.CurrentDirectory;
         var newWorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -59,16 +42,11 @@ public class Application : System.Windows.Application
             Environment.CurrentDirectory = newWorkingDirectory;
             Console.WriteLine($"Current working directory: {oldWorkingDirectory} -→ {newWorkingDirectory}");
         }
-
-        /********
-         准备主窗口
-         ********/
+     // 准备主窗口
         var editor = new TextEditor.Windows.EditorWindow();
         if (evt.Args.Length != 0)
         {
-            /************
-             命令行参数处理
-             ************/
+         // 命令行参数处理
             var fullFilePaths = new List<String>();
             var failedArguments = new List<String>();
             foreach (String argument in evt.Args)
@@ -94,10 +72,7 @@ public class Application : System.Windows.Application
             editor.TabControl.New(fullFilePaths.ToArray());
         }
         this.MainWindow = editor;
-
-        /********
-         启动主窗口
-         ********/
+     // 启动主窗口
         this.MainWindow.Show();
     }
 }

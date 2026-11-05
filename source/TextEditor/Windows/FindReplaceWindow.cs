@@ -2,9 +2,14 @@ namespace TextEditor.Windows;
 
 public class FindReplaceWindow : System.Windows.Window
 {
-    /*******
-     构造函数
-     *******/
+ // 构造函数
+    static FindReplaceWindow()
+    {
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
+        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
+    }
     public FindReplaceWindow(TextEditor.Controls.TabControl tabControl, TextEditor.SearchMode mode)
     {
         this.SizeToContent = System.Windows.SizeToContent.WidthAndHeight;
@@ -41,17 +46,7 @@ public class FindReplaceWindow : System.Windows.Window
             this.ChangeReplacementAreaVisibility(true);
         }
     }
-    static FindReplaceWindow()
-    {
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindPrevious, FindPrevious_Execute, FindPrevious_CanExecute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.SearchCommands.FindNext,     FindNext_Execute,     FindNext_CanExecute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.Replace,    Replace_Execute,    Found_CanExecute));
-        System.Windows.Input.CommandManager.RegisterClassCommandBinding(typeof(TextEditor.Windows.FindReplaceWindow), new System.Windows.Input.CommandBinding(TextEditor.ReplacementCommands.ReplaceAll, ReplaceAll_Execute, Found_CanExecute));
-    }
-
-    /*********************
-     数据对象（字段 (Fields)）
-     *********************/
+ // 数据槽
     private TextEditor.Controls.TabControl TabControl = null!;  // 用于动态获取当前选项卡的编辑框
     private TextEditor.Controls.TextBox FindInput = null!;
     private TextEditor.Controls.TextBox ReplaceInput = null!;
@@ -61,10 +56,7 @@ public class FindReplaceWindow : System.Windows.Window
     private System.Windows.Controls.Button ReplaceButton = null!;
     private System.Windows.Controls.Button ReplaceAllButton = null!;
     public TextEditor.Direction LastSearchDirection = TextEditor.Direction.Forward;
-
-    /*******
-     类级函数
-     *******/
+ // 类级函数
     private static void FindPrevious_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
@@ -128,10 +120,7 @@ public class FindReplaceWindow : System.Windows.Window
                 evt.CanExecute = true;
         }
     }
-
-    /*******
-     实例函数
-     *******/
+ // 实例函数
     private void ChangeReplacementAreaVisibility(Boolean value)
     {
         System.Windows.GridLength height;
