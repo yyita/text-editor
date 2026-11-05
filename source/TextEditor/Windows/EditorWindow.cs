@@ -36,7 +36,7 @@ public class EditorWindow : System.Windows.Window
             var tabControl= editorWindow.TabControl;
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "All Files|*.*",
+                Filter = "所有文件|*.*",
             };
             if (dialog.ShowDialog() == false)
                 return;

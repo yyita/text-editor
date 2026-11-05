@@ -251,7 +251,7 @@ public class FindReplaceWindow : System.Windows.Window
             Content = "✕",
             Background = System.Windows.Media.Brushes.White,
             BorderThickness = new System.Windows.Thickness(0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Close (Esc)" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "关闭 (Esc)" }
         };
         closeButton.Click += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
@@ -278,7 +278,7 @@ public class FindReplaceWindow : System.Windows.Window
         {
             AcceptsReturn = true,
             Margin = new System.Windows.Thickness(0D, 0D, 2D, 0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find What" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "搜索对象" }
         };
     }
     private System.Windows.Controls.CheckBox BuildIgnoreCaseCheckBox()
@@ -286,7 +286,7 @@ public class FindReplaceWindow : System.Windows.Window
         return new System.Windows.Controls.CheckBox
         {
             IsChecked = true,
-            Content = "Ignore Case",
+            Content = "忽略大小写",
             VerticalAlignment = System.Windows.VerticalAlignment.Center,
             Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
@@ -299,7 +299,7 @@ public class FindReplaceWindow : System.Windows.Window
             Command = TextEditor.SearchCommands.FindPrevious,
             CommandTarget = this,
             Margin = new System.Windows.Thickness(2D, 0D, 0D, 0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find Previous (Ctrl+Up)" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "查找上一个 (Ctrl+Up)" }
         };
     }
     private System.Windows.Controls.Button BuildFindNextButton()
@@ -309,7 +309,7 @@ public class FindReplaceWindow : System.Windows.Window
             Content = "↓",
             Command = TextEditor.SearchCommands.FindNext,
             CommandTarget = this,
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Find Next (Ctrl+Down)" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "查找下一个 (Ctrl+Down)" }
         };
     }
     private TextEditor.Controls.TextBox BuildReplaceInputBox()
@@ -318,7 +318,7 @@ public class FindReplaceWindow : System.Windows.Window
         {
             AcceptsReturn = true,
             Margin = new System.Windows.Thickness(0D, 0D, 2D, 0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace As" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "替换结果" }
         };
     }
     private System.Windows.Controls.Button BuildReplaceButton()
@@ -329,7 +329,7 @@ public class FindReplaceWindow : System.Windows.Window
             Command = TextEditor.ReplacementCommands.Replace,
             CommandTarget = this,
             Margin = new System.Windows.Thickness(2D, 0D, 0D, 0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace (Ctrl+Enter)" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "替换当前 (Ctrl+Enter)" }
         };
     }
     private System.Windows.Controls.Button BuildReplaceAllButton()
@@ -339,7 +339,7 @@ public class FindReplaceWindow : System.Windows.Window
             Content = "⇊",
             Command = TextEditor.ReplacementCommands.ReplaceAll,
             CommandTarget = this,
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "Replace All (Ctrl+Shift+Enter)" }
+            ToolTip = new System.Windows.Controls.ToolTip{ Content = "替换全部 (Ctrl+Shift+Enter)" }
         };
     }
     public Boolean TrySearch(TextEditor.SearchDirection direction)
