@@ -132,14 +132,14 @@ public class FindReplaceWindow : System.Windows.Window
         {
             height = System.Windows.GridLength.Auto;
             toggleButtonContent = "▲";
-            toolTipContent = "Show Replace";
+            toolTipContent = "显示替换功能";
             visibility = System.Windows.Visibility.Visible;
         }
         else
         {
             height = new System.Windows.GridLength(0D);
             toggleButtonContent = "▼";
-            toolTipContent = "Hide Replace";
+            toolTipContent = "隐藏替换功能";
             visibility = System.Windows.Visibility.Collapsed;
         }
 
