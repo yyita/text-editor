@@ -5,6 +5,8 @@ public class TextBox : System.Windows.Controls.TextBox
  // 构造函数
     public TextBox()
     {
+        this.IsInactiveSelectionHighlightEnabled = true;
+        this.Style = this.BuildStyle();
         this.BindingCommands();
     }
  // 数据槽
@@ -98,6 +100,16 @@ public class TextBox : System.Windows.Controls.TextBox
                 TextEditor.FormatCommands.Indent.Execute(null, textBox);
         }
         base.OnPreviewKeyDown(evt);
+    }
+    private System.Windows.Style BuildStyle()
+    {
+        var style = new System.Windows.Style(typeof(TextEditor.Controls.TextBox));
+
+        var noKeyboardFocusTrigger = new System.Windows.Trigger{Property=TextEditor.Controls.TextBox.IsKeyboardFocusedProperty, Value=false};
+        noKeyboardFocusTrigger.Setters.Add(new System.Windows.Setter{Property=SelectionBrushProperty, Value=System.Windows.Media.Brushes.Gray});
+        style.Triggers.Add(noKeyboardFocusTrigger);
+
+        return style;
     }
     private void BindingCommands()
     {
