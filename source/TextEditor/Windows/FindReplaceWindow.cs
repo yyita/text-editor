@@ -52,9 +52,10 @@ public class FindReplaceWindow : System.Windows.Window
     private TextEditor.Controls.TextBox ReplaceInput = null!;
     private System.Windows.Controls.CheckBox IgnoreCaseCheckBox = null!;
     private System.Windows.Controls.RowDefinition ReplaceRow = null!;
-    private System.Windows.Controls.Primitives.ToggleButton ToggleButton = null!;
+    private System.Windows.Controls.Button ToggleButton = null!;
     private System.Windows.Controls.Button ReplaceButton = null!;
     private System.Windows.Controls.Button ReplaceAllButton = null!;
+    private Boolean? IsReplacementAreaVisible = null;
     public TextEditor.Direction LastSearchDirection = TextEditor.Direction.Forward;
  // 类级函数
     private static void FindPrevious_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
@@ -132,14 +133,14 @@ public class FindReplaceWindow : System.Windows.Window
         {
             height = System.Windows.GridLength.Auto;
             toggleButtonContent = "▲";
-            toolTipContent = "显示替换功能";
+            toolTipContent = "隐藏替换功能";
             visibility = System.Windows.Visibility.Visible;
         }
         else
         {
             height = new System.Windows.GridLength(0D);
             toggleButtonContent = "▼";
-            toolTipContent = "隐藏替换功能";
+            toolTipContent = "显示替换功能";
             visibility = System.Windows.Visibility.Collapsed;
         }
 
@@ -149,6 +150,7 @@ public class FindReplaceWindow : System.Windows.Window
         this.ReplaceInput.Visibility = visibility;
         this.ReplaceButton.Visibility = visibility;
         this.ReplaceAllButton.Visibility = visibility;
+        this.IsReplacementAreaVisible = value;
     }
     protected override void OnClosing(System.ComponentModel.CancelEventArgs evt)
     {
@@ -248,16 +250,12 @@ public class FindReplaceWindow : System.Windows.Window
         };
         return closeButton;
     }
-    private System.Windows.Controls.Primitives.ToggleButton BuildToggleButton()
+    private System.Windows.Controls.Button BuildToggleButton()
     {
-        var toggleButton = new System.Windows.Controls.Primitives.ToggleButton
-        {
-            Background = System.Windows.Media.Brushes.White,
-            BorderThickness = new System.Windows.Thickness(0D)
-        };
+        var toggleButton = new System.Windows.Controls.Button();
         toggleButton.Click += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
-            this.ChangeReplacementAreaVisibility( ((System.Windows.Controls.Primitives.ToggleButton) sender).IsChecked == true );
+            this.ChangeReplacementAreaVisibility(this.IsReplacementAreaVisible == false);
         };
         return toggleButton;
     }
@@ -360,6 +358,7 @@ public class FindReplaceWindow : System.Windows.Window
             {
                 textBox.Focus();
                 textBox.Select(resultFirst, searchTarget.Length);
+                this.Focus();
                 return true;
             }
         }
