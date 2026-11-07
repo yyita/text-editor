@@ -237,13 +237,7 @@ public class FindReplaceWindow : System.Windows.Window
     }
     private System.Windows.Controls.Button BuildCloseButton()
     {
-        var closeButton = new System.Windows.Controls.Button
-        {
-            Content = "✕",
-            Background = System.Windows.Media.Brushes.White,
-            BorderThickness = new System.Windows.Thickness(0D),
-            ToolTip = new System.Windows.Controls.ToolTip{ Content = "关闭 (Esc)" }
-        };
+        var closeButton = new TextEditor.Windows.FindReplaceWindow.CloseButton();
         closeButton.Click += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
             this.Close();
@@ -365,6 +359,43 @@ public class FindReplaceWindow : System.Windows.Window
         finally
         {
             this.LastSearchDirection = direction;
+        }
+    }
+ // 内部类
+    private class CloseButton : System.Windows.Controls.Button
+    {
+     // 构造函数
+        public CloseButton()
+        {
+            this.Content = "✕";
+            this.Background = System.Windows.Media.Brushes.White;
+            this.BorderThickness = new System.Windows.Thickness(0D);
+            this.ToolTip = new System.Windows.Controls.ToolTip{Content="关闭 (Esc)"};
+            this.Template = this.BuildTemplate();
+        }
+     // 实例函数
+        private System.Windows.Controls.ControlTemplate BuildTemplate()
+        {
+            // 采纳自： https://www.cnblogs.com/Fred1987/p/18237685
+            var border = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.Border), "border");
+            border.SetBinding(System.Windows.Controls.Border.BackgroundProperty, new System.Windows.Data.Binding("Background"){RelativeSource=System.Windows.Data.RelativeSource.TemplatedParent});
+            border.SetBinding(System.Windows.Controls.Border.BorderBrushProperty, new System.Windows.Data.Binding("BorderBrush"){RelativeSource=System.Windows.Data.RelativeSource.TemplatedParent});
+            border.SetBinding(System.Windows.Controls.Border.BorderThicknessProperty, new System.Windows.Data.Binding("BorderThickness"){RelativeSource=System.Windows.Data.RelativeSource.TemplatedParent});
+            border.SetBinding(System.Windows.Controls.Border.PaddingProperty, new System.Windows.Data.Binding("Padding"){RelativeSource=System.Windows.Data.RelativeSource.TemplatedParent});
+
+            var presenter = new System.Windows.FrameworkElementFactory(typeof(System.Windows.Controls.ContentPresenter));
+            presenter.SetValue(System.Windows.FrameworkElement.HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Center);
+            presenter.SetValue(System.Windows.FrameworkElement.VerticalAlignmentProperty, System.Windows.VerticalAlignment.Center);
+            border.AppendChild(presenter);
+
+            var template = new System.Windows.Controls.ControlTemplate(typeof(System.Windows.Controls.Button)){VisualTree = border};
+
+            var mouseHoverTrigger = new System.Windows.Trigger{Property=System.Windows.Controls.Button.IsMouseOverProperty, Value=true};
+            mouseHoverTrigger.Setters.Add(new System.Windows.Setter(System.Windows.Controls.Border.BackgroundProperty, new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xC4, 0x2B, 0x1C)), "border"));
+            mouseHoverTrigger.Setters.Add(new System.Windows.Setter(System.Windows.Controls.Button.ForegroundProperty, new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xFF, 0xFF, 0xFF))));
+            template.Triggers.Add(mouseHoverTrigger);
+
+            return template;
         }
     }
 }
