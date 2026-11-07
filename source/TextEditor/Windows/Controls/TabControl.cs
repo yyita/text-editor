@@ -51,6 +51,7 @@ public class TabControl : System.Windows.Controls.TabControl
     {
         if (!evt.Data.GetDataPresent(System.Windows.DataFormats.FileDrop, true))
             return;
+        System.Windows.Window.GetWindow(this).Activate();
         var filePaths = evt.Data.GetData(System.Windows.DataFormats.FileDrop, true) as string[];
         if (filePaths!.Length == 1)
             this.New(filePaths[0]);
