@@ -120,7 +120,8 @@ public class TabItem : System.Windows.Controls.TabItem
         };
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
     {
-        this.TextBox.Focus();
+        if (this.TextBox.IsVisible)
+            this.TextBox.Focus();
         this.TextBox.TextChanged += this.TextBox_OnTextChanged;
         this.TextBox.SelectionChanged += (object sender, System.Windows.RoutedEventArgs evt) =>
         {
