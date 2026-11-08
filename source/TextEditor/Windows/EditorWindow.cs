@@ -30,10 +30,11 @@ public class EditorWindow : System.Windows.Window
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
                 Filter = "所有文件|*.*",
+                Multiselect = true,
             };
             if (dialog.ShowDialog() == false)
                 return;
-            tabControl.New(dialog.FileName);
+            tabControl.New(dialog.FileNames);
         }
     }
     private static System.Windows.Input.ExecutedRoutedEventHandler OpenFindReplaceWindowCallback(TextEditor.SearchMode mode)

@@ -53,10 +53,7 @@ public class TabControl : System.Windows.Controls.TabControl
             return;
         System.Windows.Window.GetWindow(this).Activate();
         var filePaths = evt.Data.GetData(System.Windows.DataFormats.FileDrop, true) as string[];
-        if (filePaths!.Length == 1)
-            this.New(filePaths[0]);
-        else
-            this.New(filePaths);
+        this.New(filePaths!);
         evt.Handled = true;
     }
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs evt)
@@ -82,51 +79,55 @@ public class TabControl : System.Windows.Controls.TabControl
                 return existing;
         return null;
     }
-    // 从单个文件新建标签页并选中。当文件已有对应标签页，选中时弹窗以提示，否则选中以提示。
-    public void New(string filePath)
-    {
-        var tabItem = this.TryGetTabItem(filePath);
-        if (tabItem == null)
-        {
-            tabItem = new TextEditor.Controls.TabItem(filePath);
-            this.Items.Add(tabItem);
-            this.SelectedItem = tabItem;
-        }
-        else
-        {
-            if (tabItem == this.SelectedItem)
-                System.Windows.MessageBox.Show(System.Windows.Window.GetWindow(this), "当前已选中对应标签页，未对其进行重载。");
-            else
-                this.SelectedItem = tabItem;
-        }
-    }
-    // 从多个文件新建标签页并选中第一个。当文件已有对应标签页时弹窗以提示。
     public void New(string[] filePaths)
     {
-        TextEditor.Controls.TabItem? firstNewTab = null;
-        var newTabFiles = new List<String>();
-        var existingTabItemFiles = new List<String>();
-        foreach (string filePath in filePaths)
+        if (filePaths.Length == 1)
         {
+         // 从单个文件新建标签页并选中。当文件已有对应标签页，选中时弹窗以提示，否则选中以提示。
+            var filePath = filePaths[0];
             var tabItem = this.TryGetTabItem(filePath);
             if (tabItem == null)
             {
                 tabItem = new TextEditor.Controls.TabItem(filePath);
                 this.Items.Add(tabItem);
-                firstNewTab ??= tabItem;
-                newTabFiles.Add(filePath);
+                this.SelectedItem = tabItem;
             }
-            else existingTabItemFiles.Add(filePath);
+            else
+            {
+                if (tabItem == this.SelectedItem)
+                    System.Windows.MessageBox.Show(System.Windows.Window.GetWindow(this), "当前已选中对应标签页，未对其进行重载。");
+                else
+                    this.SelectedItem = tabItem;
+            }
         }
-        if (firstNewTab != null)
-            this.SelectedItem = firstNewTab;
-        if (existingTabItemFiles.Count > 0)
+        else
         {
-            var messages = new System.Text.StringBuilder();
-            if (newTabFiles.Count > 0)
-                messages.Append($"已加载以下 {newTabFiles.Count} 个文件：\n{String.Join('\n', newTabFiles)}\n");
-            messages.Append($"未重载以下 {existingTabItemFiles.Count} 个文件：\n{String.Join('\n', existingTabItemFiles)}");
-            System.Windows.MessageBox.Show(System.Windows.Window.GetWindow(this), messages.ToString());
+         // 从多个文件新建标签页并选中第一个。当文件已有对应标签页时弹窗以提示。
+            TextEditor.Controls.TabItem? firstNewTab = null;
+            var newTabFiles = new List<String>();
+            var existingTabItemFiles = new List<String>();
+            foreach (string filePath in filePaths)
+            {
+                var tabItem = this.TryGetTabItem(filePath);
+                if (tabItem == null)
+                {
+                    tabItem = new TextEditor.Controls.TabItem(filePath);
+                    this.Items.Add(tabItem);
+                    firstNewTab ??= tabItem;
+                    newTabFiles.Add(filePath);
+                }
+                else existingTabItemFiles.Add(filePath);
+            }
+            if (firstNewTab != null)
+                this.SelectedItem = firstNewTab;
+            if (existingTabItemFiles.Count > 0)
+            {
+                var messages = new System.Text.StringBuilder();
+                if (newTabFiles.Count > 0)
+                    messages.Append($"已加载以下 {newTabFiles.Count} 个文件：\n{String.Join('\n', newTabFiles)}\n");
+                messages.Append($"未重载以下 {existingTabItemFiles.Count} 个文件：\n{String.Join('\n', existingTabItemFiles)}");
+                System.Windows.MessageBox.Show(System.Windows.Window.GetWindow(this), messages.ToString());
+            }
         }
     }
 }
