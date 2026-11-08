@@ -110,7 +110,6 @@ public class TabItem : System.Windows.Controls.TabItem
         => new TextEditor.Controls.TextBox
         {
             AcceptsReturn = true,
-            AcceptsTab = true,
             TextWrapping = System.Windows.TextWrapping.NoWrap,
             VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,

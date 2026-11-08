@@ -86,18 +86,12 @@ public class TextBox : System.Windows.Controls.TextBox
  // 实例函数
     protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs evt)
     {
-        // 按键 Tab 自带内置行为，并且会令绑定了它的命令的快捷键失效，
-        // 即使对 evt.Key 等于 Key.Tab 的 PreviewKeyDown 事件进行阻塞。
-        // 因此，此处为绑定的命令进行了补发，硬编码的触发条件仅用作过渡：
-        if (evt.Key == System.Windows.Input.Key.Tab)
+        if ((evt.Key == System.Windows.Input.Key.Space)
+         && (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Shift))
         {
             evt.Handled = true;
-            var textBox = (System.Windows.Controls.TextBox) evt.Source;
-            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0
-             && TextEditor.FormatCommands.Dedent.CanExecute(null, textBox))
-                TextEditor.FormatCommands.Dedent.Execute(null, textBox);
-            else if (TextEditor.FormatCommands.Indent.CanExecute(null, textBox))
-                TextEditor.FormatCommands.Indent.Execute(null, textBox);
+            if (TextEditor.FormatCommands.Dedent.CanExecute(null, this))
+                TextEditor.FormatCommands.Dedent.Execute(null, this);
         }
         base.OnPreviewKeyDown(evt);
     }
