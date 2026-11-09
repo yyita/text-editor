@@ -44,8 +44,8 @@ public class MainMenu : System.Windows.Controls.Menu
         menu.Items.Add(new System.Windows.Controls.Separator());
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Indent });
         menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.Dedent });
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.IndentRegion, InputGestureText = "Ctrl+]" });
-        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.DedentRegion, InputGestureText = "Ctrl+[" });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.IndentRegion });
+        menu.Items.Add(new System.Windows.Controls.MenuItem{ Command = TextEditor.FormatCommands.DedentRegion });
         return menu;
     }
 }
