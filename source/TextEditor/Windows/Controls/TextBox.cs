@@ -12,16 +12,30 @@ public class TextBox : System.Windows.Controls.TextBox
  // 数据槽
     public Int32 IndentWidth = 4;
  // 访问器
-    public Int32 SelectionEnd => this.SelectionStart + this.SelectionLength;
+    public Int32 SelectionEnd
+    {
+        get
+        {
+            return this.SelectionStart + this.SelectionLength;
+        }
+    }
  // 类级函数
     private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
-        => ((TextEditor.Controls.TextBox) sender).Indent();
+    {
+        ((TextEditor.Controls.TextBox) sender).Indent();
+    }
     private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
-        => ((TextEditor.Controls.TextBox) sender).Dedent();
+    {
+        ((TextEditor.Controls.TextBox) sender).Dedent();
+    }
     private static void IndentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
-        => ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Forward);
+    {
+        ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Forward);
+    }
     private static void DedentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
-        => ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Backward);
+    {
+        ((TextEditor.Controls.TextBox) sender).IndentRegion(TextEditor.Direction.Backward);
+    }
     private static void Focused_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
         if (sender is System.Windows.Controls.TextBox)
@@ -120,11 +134,17 @@ public class TextBox : System.Windows.Controls.TextBox
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.DedentRegion, DedentRegion_Execute,  Focused_CanExecute));
     }
     private Int32 CalculateInsertSpaceCount(Int32 currentWidth)
-        => this.IndentWidth - (currentWidth % this.IndentWidth);
+    {
+        return this.IndentWidth - (currentWidth % this.IndentWidth);
+    }
     private Int32 CalculateRemoveSpaceCount(Int32 currentWidth)
-        => (((currentWidth % this.IndentWidth) + this.IndentWidth - 1) % this.IndentWidth) + 1;
+    {
+        return (((currentWidth % this.IndentWidth) + this.IndentWidth - 1) % this.IndentWidth) + 1;
+    }
     public void Write(String content)
-        => this.SelectedText = content;
+    {
+        this.SelectedText = content;
+    }
     public void Remove(Int32 startIndex, Int32 length)
     {
         this.BeginChange();
@@ -150,11 +170,17 @@ public class TextBox : System.Windows.Controls.TextBox
         return (start, end);
     }
     public void CaretMoveToDocumentEnd()
-        => this.Select(this.Text.Length, 0);
+    {
+        this.Select(this.Text.Length, 0);
+    }
     public void CaretMoveToCharacterIndex(Int32 characterIndex)
-        => this.Select(characterIndex, 0);
+    {
+        this.Select(characterIndex, 0);
+    }
     public void CaretMoveToLineIndex(Int32 lineIndex)
-        => this.Select(this.GetCharacterIndexFromLineIndex(lineIndex), 0);
+    {
+        this.Select(this.GetCharacterIndexFromLineIndex(lineIndex), 0);
+    }
     public void Indent()
     {
         var (row, column) = this.GetCoordinatesFromCharacterIndex(this.CaretIndex);
