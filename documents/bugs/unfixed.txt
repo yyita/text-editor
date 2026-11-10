@@ -27,3 +27,18 @@
       成功率： 随缘，几次到上百次。
   治标：
     · 引起界面重绘： 调整窗口尺寸 / 最小化再最大化窗口。
+
+《失去焦点的编辑区选区不随滚动移动》
+  来源： 祖传。
+  复现：
+    程序界面：
+    · 主窗口 (System.Windows.Window)： 提供文本框×1、按钮×1。
+    · 文本框 (System.Windows.Controls.TextBox)： 设置 AcceptsReturn 和 IsInactiveSelectionHighlightEnabled 为真。
+    · 按钮 (System.Windows.Controls.Button)： 为 Click 添加回调： 新建 Window 并 Show 。
+    执行步骤：
+    1. 运行程序。
+    2. 在文本框输入足以允许滚动的文本。
+    3. 选中文本。
+    4. 点击按钮。
+    最终效果：
+    无论如何滚动文本框，选区效果相对文本框的位置始终保持不变。
