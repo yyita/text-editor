@@ -3,7 +3,7 @@ namespace TextEditor.Windows;
 public class JumpWindow : System.Windows.Window
 {
  // 构造函数
-    public JumpWindow(System.Windows.Controls.TextBox textBox)
+    public JumpWindow(System.Windows.Controls.TextBox editBox)
     {
         this.Title = "跳转";
         this.ResizeMode = System.Windows.ResizeMode.NoResize;
@@ -12,13 +12,13 @@ public class JumpWindow : System.Windows.Window
         this.ShowInTaskbar = false;
         this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
         this.Content = this.BuildGridLayout();
-        this.TextBox = textBox;
+        this.EditBox = editBox;
         this.Loaded += this.OnLoaded;
     }
  // 数据槽
     private System.Windows.Controls.TextBox RowInputBox = null!;
     private System.Windows.Controls.TextBox ColumnInputBox = null!;
-    private System.Windows.Controls.TextBox TextBox = null!;
+    private System.Windows.Controls.TextBox EditBox = null!;
     public const Double PADDING = 4D;
     public const Double HALF_OF_PADDING = PADDING / 2;
     public const Double INPUT_BOX_WIDTH_MAXIMUM = 76D;  // 10位
@@ -151,7 +151,7 @@ public class JumpWindow : System.Windows.Window
     }
     private void TryJump()
     {
-        var textBox = this.TextBox;
+        var editBox = this.EditBox;
         if (!Int32.TryParse(this.RowInputBox.Text, out Int32 row))
         {
             System.Windows.MessageBox.Show(this, "行号： 你的输入不是一个整数。");
@@ -162,7 +162,7 @@ public class JumpWindow : System.Windows.Window
             System.Windows.MessageBox.Show(this, "行号： 你的输入超出范围下限。");
             return;
         }
-        if (row > textBox.LineCount)
+        if (row > editBox.LineCount)
         {
             System.Windows.MessageBox.Show(this, "行号： 你的输入超出范围上限。");
             return;
@@ -178,13 +178,13 @@ public class JumpWindow : System.Windows.Window
             System.Windows.MessageBox.Show(this, "列号： 你的输入超出范围下限。");
             return;
         }
-        if (column > textBox.CountColumn(row))
+        if (column > editBox.CountColumn(row))
         {
             System.Windows.MessageBox.Show(this, "列号： 你的输入超出范围上限。");
             return;
         }
         column--;
         this.Close();
-        textBox.See(row, column);
+        editBox.See(row, column);
     }
 }

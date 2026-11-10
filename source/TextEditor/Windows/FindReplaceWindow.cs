@@ -26,10 +26,10 @@ public class FindReplaceWindow : System.Windows.Window
 
         var tabItem = tabControl.SelectedItem as TextEditor.Controls.TabItem;
         var hasTextBoxSelection = (tabItem != null
-                                && tabItem.TextBox.SelectionLength != 0);
+                                && tabItem.EditBox.SelectionLength != 0);
 
         if (hasTextBoxSelection)
-            this.FindInput.Text = tabItem!.TextBox.SelectedText;
+            this.FindInput.Text = tabItem!.EditBox.SelectedText;
 
         if (mode == TextEditor.SearchMode.Find)
         {
@@ -73,7 +73,7 @@ public class FindReplaceWindow : System.Windows.Window
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (window.FindInput.Text != ""           // 1. 待查找文本不为空：查找空串不在预期用法内。
-             && tabItem.TextBox.SelectionStart != 0)  // 2. 未超出文本下边界：边界之外找不到任何文本。
+             && tabItem.EditBox.SelectionStart != 0)  // 2. 未超出文本下边界：边界之外找不到任何文本。
                 evt.CanExecute = true;
         }
     }
@@ -92,23 +92,23 @@ public class FindReplaceWindow : System.Windows.Window
         if (window.TabControl.SelectedItem is TextEditor.Controls.TabItem tabItem)
         {
             if (window.FindInput.Text != ""                                   // 1. 待查找文本不为空：查找空串不在预期用法内。
-             && tabItem.TextBox.SelectionEnd != tabItem.TextBox.Text.Length)  // 2. 未超出文本上边界：边界之外找不到任何文本。
+             && tabItem.EditBox.SelectionEnd != tabItem.EditBox.Text.Length)  // 2. 未超出文本上边界：边界之外找不到任何文本。
                 evt.CanExecute = true;
         }
     }
     private static void Replace_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox.SelectedText = window.ReplaceInput.Text;
+        ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).EditBox.SelectedText = window.ReplaceInput.Text;
         window.TrySearch(window.LastSearchDirection);
     }
     private static void ReplaceAll_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
         var window = ((TextEditor.Windows.FindReplaceWindow) sender);
-        var textBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).TextBox;
+        var editBox = ((TextEditor.Controls.TabItem) window.TabControl.SelectedItem).EditBox;
         var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
                                                                            : StringComparison.Ordinal;
-        textBox.Text = textBox.Text.Replace(window.FindInput.Text, window.ReplaceInput.Text, stringComparison);
+        editBox.Text = editBox.Text.Replace(window.FindInput.Text, window.ReplaceInput.Text, stringComparison);
     }
     private static void Found_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
@@ -117,7 +117,7 @@ public class FindReplaceWindow : System.Windows.Window
         {
             var stringComparison = window.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
                                                                                : StringComparison.Ordinal;
-            if (tabItem.TextBox.SelectedText.Equals(window.FindInput.Text, stringComparison))  // 要求至少已找到1个目标文本
+            if (tabItem.EditBox.SelectedText.Equals(window.FindInput.Text, stringComparison))  // 要求至少已找到1个目标文本
                 evt.CanExecute = true;
         }
     }
@@ -327,22 +327,22 @@ public class FindReplaceWindow : System.Windows.Window
     {
         String searchTarget;
         StringComparison stringComparison;
-        TextEditor.Controls.TextBox textBox;
+        TextEditor.Controls.TextBox editBox;
         Int32 searchStart, resultFirst;
 
         searchTarget = this.FindInput.Text;
-        textBox = ((TextEditor.Controls.TabItem) this.TabControl.SelectedItem).TextBox;
+        editBox = ((TextEditor.Controls.TabItem) this.TabControl.SelectedItem).EditBox;
         stringComparison = this.IgnoreCaseCheckBox.IsChecked == true ? StringComparison.OrdinalIgnoreCase
                                                                      : StringComparison.Ordinal;
         if (direction == TextEditor.Direction.Forward)
         {
-            searchStart = textBox.SelectionEnd;
-            resultFirst = textBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
+            searchStart = editBox.SelectionEnd;
+            resultFirst = editBox.Text.IndexOf(searchTarget, searchStart, stringComparison);
         }
         else
         {
-            searchStart = textBox.SelectionStart - 1;
-            resultFirst = textBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
+            searchStart = editBox.SelectionStart - 1;
+            resultFirst = editBox.Text.LastIndexOf(searchTarget, searchStart, stringComparison);
         }
         try
         {
@@ -350,8 +350,8 @@ public class FindReplaceWindow : System.Windows.Window
                 return false;
             else
             {
-                textBox.Focus();
-                textBox.Select(resultFirst, searchTarget.Length);
+                editBox.Focus();
+                editBox.Select(resultFirst, searchTarget.Length);
                 this.Focus();
                 return true;
             }

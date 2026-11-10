@@ -5,25 +5,27 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
  // 构造函数
     public StatusBar()
     {
-        this.Items.Add( AreaBuild_Coordinates() );
-        this.Items.Add( AreaBuild_Coding() );
-        this.Items.Add( Build_RightSeparator() );
-        this.Items.Add( AreaBuild_LineBreak() );
-        this.Items.Add( Build_RightSeparator() );
-        this.Items.Add( AreaBuild_TextMode() );
+        this.Items.Add(BuildCoordinatesArea());
+        this.Items.Add(BuildCodingArea());
+        this.Items.Add(BuildRightSeparator());
+        this.Items.Add(BuildLineBreakArea());
+        this.Items.Add(BuildRightSeparator());
+        this.Items.Add(BuildTextModeArea());
 
         this.Coordinates = TextEditor.Controls.StatusBar.DefaultCoordinates;
+        this.TextMode = TextEditor.Controls.StatusBar.DefaultTextMode;
         this.LineBreak = TextEditor.Controls.StatusBar.DefaultLineBreak;
         this.Coding = TextEditor.Controls.StatusBar.DefaultCoding;
     }
  // 数据槽
     private static (Int32, Int32, Int32, Int32) DefaultCoordinates = (0, 1, 0, 1);
+    private static TextEditor.TextMode DefaultTextMode = TextEditor.TextMode.Insert;
     private static String DefaultLineBreak = Environment.NewLine;
     private static System.Text.Encoding DefaultCoding = new System.Text.UTF8Encoding();
-    private System.Windows.Controls.TextBlock? Coordinates_TextBlock;
-    private System.Windows.Controls.TextBlock? TextMode_TextBlock;
-    private System.Windows.Controls.TextBlock? LineBreak_TextBlock;
-    private System.Windows.Controls.TextBlock? Coding_TextBlock;
+    private System.Windows.Controls.TextBlock? CoordinatesTextBlock;
+    private System.Windows.Controls.TextBlock? TextModeTextBlock;
+    private System.Windows.Controls.TextBlock? LineBreakTextBlock;
+    private System.Windows.Controls.TextBlock? CodingTextBlock;
  // 访问器
     public (Int32, Int32, Int32, Int32) Coordinates
     {
@@ -31,95 +33,95 @@ public class StatusBar : System.Windows.Controls.Primitives.StatusBar
         set
         {
             var (row, rowCount, column, columnCount) = value;
-            this.Coordinates_TextBlock!.Text = $"第 {row + 1} 行，共 {rowCount} 行；第 {column + 1} 列，共 {columnCount} 列";
+            this.CoordinatesTextBlock!.Text = $"第 {row + 1} 行，共 {rowCount} 行；第 {column + 1} 列，共 {columnCount} 列";
             field = value;
         }
-    } = DefaultCoordinates;
+    }
     public TextEditor.TextMode TextMode
     {
         get;
         set
         {
             string displayText;
-            if     ( value == TextEditor.TextMode.Insert )   { displayText = "插入"; }
-            else if( value == TextEditor.TextMode.Overwrite ){ displayText = "覆写"; }
+            if      (value == TextEditor.TextMode.Insert)    { displayText = "插入"; }
+            else if (value == TextEditor.TextMode.Overwrite) { displayText = "覆写"; }
             else                                             { displayText = "只读"; }
-            this.TextMode_TextBlock!.Text = displayText;
+            this.TextModeTextBlock!.Text = displayText;
             field = value;
         }
-    } = TextEditor.TextMode.Insert;
+    }
     public string LineBreak
     {
         get;
         set
         {
             string displayText;
-            if     ( value == "\r\n" ){ displayText = "CRLF"; }
-            else if( value == "\n"   ){ displayText = "LF"; }
-            else{ throw new ArgumentException( "Only accept '\r\n' and '\n'." ); }
-            this.LineBreak_TextBlock!.Text = displayText;
+            if      (value == "\r\n") { displayText = "CRLF"; }
+            else if (value == "\n")   { displayText = "LF"; }
+            else { throw new ArgumentException("Only accept '\r\n' and '\n'."); }
+            this.LineBreakTextBlock!.Text = displayText;
             field = value;
         }
-    } = DefaultLineBreak;
+    }
     public System.Text.Encoding Coding
     {
         get;
         set
         {
-            this.Coding_TextBlock!.Text = value.EncodingName;
+            this.CodingTextBlock!.Text = value.EncodingName;
             field = value;
         }
-    } = DefaultCoding;
+    }
  // 实例函数
-    private System.Windows.Controls.Separator Build_RightSeparator()
+    private System.Windows.Controls.Separator BuildRightSeparator()
     {
         var separator = new System.Windows.Controls.Separator
         {
-            HorizontalAlignment = System.Windows.HorizontalAlignment.Right ,
-            Margin = new System.Windows.Thickness( 2D, 0D, 2D, 0D )
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+            Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
-        System.Windows.Controls.DockPanel.SetDock( separator, System.Windows.Controls.Dock.Right );
+        System.Windows.Controls.DockPanel.SetDock(separator, System.Windows.Controls.Dock.Right);
         return separator;
     }
-    private System.Windows.Controls.Primitives.StatusBarItem AreaBuild_Coordinates()
+    private System.Windows.Controls.Primitives.StatusBarItem BuildCoordinatesArea()
     {
-        this.Coordinates_TextBlock = new System.Windows.Controls.TextBlock();
+        this.CoordinatesTextBlock = new System.Windows.Controls.TextBlock();
         return new System.Windows.Controls.Primitives.StatusBarItem
         {
-            Content = this.Coordinates_TextBlock,
+            Content = this.CoordinatesTextBlock,
             Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
     }
-    private System.Windows.Controls.Primitives.StatusBarItem AreaBuild_TextMode()
+    private System.Windows.Controls.Primitives.StatusBarItem BuildTextModeArea()
     {
-        this.TextMode_TextBlock = new System.Windows.Controls.TextBlock{ Text = "插入" };
+        this.TextModeTextBlock = new System.Windows.Controls.TextBlock{ Text = "插入" };
         var statusBarItem = new System.Windows.Controls.Primitives.StatusBarItem
         {
-            Content = this.TextMode_TextBlock,
+            Content = this.TextModeTextBlock,
             HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
             Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
         System.Windows.Controls.DockPanel.SetDock(statusBarItem, System.Windows.Controls.Dock.Right);
         return statusBarItem;
     }
-    private System.Windows.Controls.Primitives.StatusBarItem AreaBuild_LineBreak()
+    private System.Windows.Controls.Primitives.StatusBarItem BuildLineBreakArea()
     {
-        this.LineBreak_TextBlock = new System.Windows.Controls.TextBlock();
+        this.LineBreakTextBlock = new System.Windows.Controls.TextBlock();
         var statusBarItem = new System.Windows.Controls.Primitives.StatusBarItem
         {
-            Content = this.LineBreak_TextBlock,
+            Content = this.LineBreakTextBlock,
             HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
             Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
         System.Windows.Controls.DockPanel.SetDock(statusBarItem, System.Windows.Controls.Dock.Right);
         return statusBarItem;
     }
-    private System.Windows.Controls.Primitives.StatusBarItem AreaBuild_Coding()
+    private System.Windows.Controls.Primitives.StatusBarItem BuildCodingArea()
     {
-        this.Coding_TextBlock = new System.Windows.Controls.TextBlock();
+        this.CodingTextBlock = new System.Windows.Controls.TextBlock();
         var statusBarItem = new System.Windows.Controls.Primitives.StatusBarItem
         {
-            Content = this.Coding_TextBlock,
+            Content = this.CodingTextBlock,
             Margin = new System.Windows.Thickness(2D, 0D, 2D, 0D)
         };
         System.Windows.Controls.DockPanel.SetDock(statusBarItem, System.Windows.Controls.Dock.Right);

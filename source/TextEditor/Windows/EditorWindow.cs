@@ -62,7 +62,7 @@ public class EditorWindow : System.Windows.Window
     {
         var editor = (TextEditor.Windows.EditorWindow) sender;
         var tab = (TextEditor.Controls.TabItem) editor.TabControl.SelectedItem;
-        var window = new TextEditor.Windows.JumpWindow(tab.TextBox){ Owner = editor }.ShowDialog();
+        var window = new TextEditor.Windows.JumpWindow(tab.EditBox){ Owner = editor }.ShowDialog();
     }
     private static void Jump_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs evt)
     {
