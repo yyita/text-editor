@@ -100,7 +100,16 @@ public class TextBox : System.Windows.Controls.TextBox
  // 实例函数
     protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs evt)
     {
-        if ((evt.Key == System.Windows.Input.Key.Space)
+        if (evt.ImeProcessedKey != System.Windows.Input.Key.None)
+        {
+            if (evt.ImeProcessedKey == System.Windows.Input.Key.Back
+             || evt.ImeProcessedKey == System.Windows.Input.Key.Delete
+             || evt.ImeProcessedKey == System.Windows.Input.Key.Escape)
+            {
+                this.Dispatcher.BeginInvoke(() => this.Select(this.CaretIndex, 0), null);
+            }
+        }
+        else if ((evt.Key == System.Windows.Input.Key.Space)
          && (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Shift))
         {
             evt.Handled = true;
