@@ -22,11 +22,11 @@ public class TextBox : System.Windows.Controls.TextBox
  // 类级函数
     private static void Indent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        ((TextEditor.Controls.TextBox) sender).Indent();
+        ((TextEditor.Controls.TextBox) sender).Indent(TextEditor.Direction.Forward);
     }
     private static void Dedent_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
-        ((TextEditor.Controls.TextBox) sender).Dedent();
+        ((TextEditor.Controls.TextBox) sender).Indent(TextEditor.Direction.Backward);
     }
     private static void IndentRegion_Execute(object sender, System.Windows.Input.ExecutedRoutedEventArgs evt)
     {
@@ -142,17 +142,12 @@ public class TextBox : System.Windows.Controls.TextBox
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.IndentRegion, IndentRegion_Execute,  Focused_CanExecute));
         this.CommandBindings.Add(new System.Windows.Input.CommandBinding(TextEditor.FormatCommands.DedentRegion, DedentRegion_Execute,  Focused_CanExecute));
     }
-    private Int32 CalculateInsertSpaceCount(Int32 currentWidth)
-    {
-        return this.IndentWidth - (currentWidth % this.IndentWidth);
-    }
-    private Int32 CalculateRemoveSpaceCount(Int32 currentWidth)
-    {
-        return (((currentWidth % this.IndentWidth) + this.IndentWidth - 1) % this.IndentWidth) + 1;
-    }
     public void Write(String content)
     {
+        this.BeginChange();
         this.SelectedText = content;
+        this.CaretIndex += content.Length;  // 移除选区
+        this.EndChange();
     }
     public void Remove(Int32 startIndex, Int32 length)
     {
@@ -190,27 +185,41 @@ public class TextBox : System.Windows.Controls.TextBox
     {
         this.Select(this.GetCharacterIndexFromLineIndex(lineIndex), 0);
     }
-    public void Indent()
+    public void Indent(TextEditor.Direction direction)
     {
-        var (row, column) = this.GetCoordinatesFromCharacterIndex(this.CaretIndex);
-        var lineText = this.GetLineText(row);
-        var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountAdjoiningSpaces(column));
-        this.BeginChange();
-        this.SelectedText = new String(' ', insertSpaceCount);
-        this.CaretIndex += insertSpaceCount;  // 移除选区
-        this.EndChange();
-    }
-    public void Dedent()
-    {
-        var caretIndex = this.CaretIndex;
-        var (row, column) = this.GetCoordinatesFromCharacterIndex(caretIndex);
-        var lineText = this.GetLineText(row);
-        var textBeforeCaret = lineText.Substring(0, column);
-        var trailingSpaceCount = textBeforeCaret.CountTrailingSpaces();
-        if (trailingSpaceCount == 0)
-            return;
-        var removeSpaceCount = this.CalculateRemoveSpaceCount(trailingSpaceCount);
-        this.Remove(caretIndex - removeSpaceCount, removeSpaceCount);
+        if (direction == TextEditor.Direction.Forward)
+        {
+            this.Write(new String(' ', this.IndentWidth));
+        }
+        else
+        {
+            var caretIndex = this.CaretIndex;
+            var (row, column) = this.GetCoordinatesFromCharacterIndex(caretIndex);
+            var lineText = this.GetLineText(row);
+            Int32 removeSpaceCount = 0;
+            Int32 leftSpaceCount = 0;
+            for (Int32 index = column - 1;  0 <= index;  index--)
+            {
+                if (removeSpaceCount == this.IndentWidth)
+                    break;
+                if (lineText[index] == ' ')
+                {
+                    leftSpaceCount++;
+                    removeSpaceCount++;
+                }
+                else break;
+            }
+            for (Int32 index = column;  index < lineText.Length;  index++)
+            {
+                if (removeSpaceCount == this.IndentWidth)
+                    break;
+                if (lineText[index] == ' ')
+                    removeSpaceCount++;
+                else break;
+            }
+            if (removeSpaceCount > 0)
+                this.Remove(caretIndex - leftSpaceCount, removeSpaceCount);
+        }
     }
     public void IndentRegion(TextEditor.Direction direction)
     {
@@ -231,14 +240,8 @@ public class TextBox : System.Windows.Controls.TextBox
             for (Int32 index = 0;  index < lineCount;  index++)
             {
                 var lineText = lines[index];
-                if (hasNonEmptyLine == true)
-                {
-                    if (lineText == Environment.NewLine)
-                        continue;
-                    var insertSpaceCount = this.CalculateInsertSpaceCount(lineText.CountLeadingSpaces());
-                    lines[index] = lineText.Insert(0, new String(' ', insertSpaceCount));
-                }
-                else lines[index] = lineText.Insert(0, indent);
+                if (hasNonEmptyLine is null || lineText != Environment.NewLine)
+                    lines[index] = lineText.Insert(0, indent);
             }
         }
         else
@@ -248,7 +251,7 @@ public class TextBox : System.Windows.Controls.TextBox
                 var lineText = this.GetLineText(row);
                 var leadingSpaceCount = lineText.CountLeadingSpaces();
                 if (leadingSpaceCount != 0)
-                    lineText = lineText.Remove(0, this.CalculateRemoveSpaceCount(leadingSpaceCount));
+                    lineText = lineText.Remove(0, Math.Min(leadingSpaceCount, this.IndentWidth));
                 lines.Add(lineText);
             }
         }
