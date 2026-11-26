@@ -126,8 +126,8 @@ public class TabItem : System.Windows.Controls.TabItem
         {
             AcceptsReturn = true,
             TextWrapping = System.Windows.TextWrapping.NoWrap,
-            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
-            HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Visible,
+            HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Visible,
             FontFamily = new System.Windows.Media.FontFamily( "Fira Code" ),
             FontSize = 16D,
             TabIndex = 0,  // 将 Tab 序提至最前，使切换至当前选项卡时的自动焦点落至自身
